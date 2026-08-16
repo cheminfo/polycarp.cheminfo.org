@@ -25,11 +25,11 @@
     ></div>
     <script>
       var version =
-        new URLSearchParams(window.location.search).get("v") || "latest";
-      var prefix = "https://www.lactame.com/visualizer/" + version;
-      var script = document.createElement("script");
-      script.setAttribute("data-main", prefix + "/init");
-      script.setAttribute("src", prefix + "/components/requirejs/require.js");
+        new URLSearchParams(window.location.search).get('v') || 'latest';
+      var prefix = 'https://www.lactame.com/visualizer/' + version;
+      var script = document.createElement('script');
+      script.setAttribute('data-main', prefix + '/init');
+      script.setAttribute('src', prefix + '/components/requirejs/require.js');
       document.head.appendChild(script);
     </script>
   </body>

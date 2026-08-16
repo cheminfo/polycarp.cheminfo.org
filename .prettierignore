@@ -1,2 +1,4 @@
-frontend/dist/
-.DS_Store
+CHANGELOG.md
+coverage
+dist
+node_modules

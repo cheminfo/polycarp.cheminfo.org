@@ -1,0 +1,1585 @@
+/*
+ * Neutrals, geometry and type below are the shared cheminfo identity and are
+ * identical on every *.cheminfo.org site — never re-pick them here.
+ */
+:root {
+  --surface: #ffffff;
+  --surface-sunken: #f5f7fa;
+  --surface-raised: #ffffff;
+  --border: #dfe3e8;
+  --border-strong: #c3cad3;
+  --text: #16202c;
+  --text-muted: #5b6875;
+  --text-faint: #8a96a3;
+
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgb(16 32 48 / 8%);
+  --shadow-md: 0 4px 14px rgb(16 32 48 / 10%);
+  --shadow-lg: 0 12px 32px rgb(16 32 48 / 16%);
+
+  --header-height: 3.5rem;
+  --page-max: 84rem;
+
+  /* The two colours this site owns: the two comonomers of a chain. */
+  --brand: #be185d;
+  --brand-alt: #1d4ed8;
+  --accent: var(--brand);
+
+  /* Model class colours: these say what a class *is*, so they keep their own
+     tokens and never follow the brand. */
+  --class-0-color: #1c3d6e;
+  --class-1-color: #7b2929;
+  --class-2-color: #b5621e;
+
+  --border-radius: 6px;
+  --shadow: var(--shadow-sm);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none !important;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: var(--surface-sunken);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Blueprint ships its own blue for `intent="primary"` and for links. The
+ * accent on every one of our sites is the brand, so retune Blueprint's tokens
+ * rather than letting a second accent colour onto the page.
+ */
+:root {
+  --bp-intent-primary-rest: var(--brand);
+  --bp-intent-primary-hover: #a3164f;
+  --bp-intent-primary-active: #8c1244;
+  --bp-typography-color-primary-rest: var(--brand);
+  --bp-typography-color-primary-hover: #a3164f;
+  --bp-typography-color-primary-active: #8c1244;
+}
+
+/* A form control does not inherit the page font. */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* ── App shell ─────────────────────────────────────────────── */
+
+.app-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.app-header__inner {
+  display: flex;
+  height: var(--header-height);
+  max-width: var(--page-max);
+  align-items: center;
+  padding: 0 1.25rem;
+  margin: 0 auto;
+  gap: 1rem;
+}
+
+.brand {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text);
+  font-weight: 700;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.wordmark {
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.wordmark__lead {
+  color: var(--brand);
+}
+
+.wordmark__alt {
+  color: var(--brand-alt);
+}
+
+/* The pages: they start at the brand and scroll on a narrow window rather
+   than pushing the utilities off the edge. */
+.app-header-nav {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 0.15rem;
+  scrollbar-width: thin;
+}
+
+.app-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.4rem;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-link--active {
+  background: color-mix(in oklab, var(--accent) 12%, white);
+  color: var(--accent);
+}
+
+.app-content {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ── Predict tab layout ────────────────────────────────────── */
+
+/*
+ * Stacked layout, designed to fit above the fold on a laptop:
+ *   Row 1 — a compact horizontal **settings bar** with every parameter +
+ *           the Predict button (wraps gracefully on narrow screens).
+ *   Row 2 — two columns: monomer editors on the **left** (narrow stack —
+ *           reference for what you're asking the model about) and the
+ *           **results sub-tabs** on the right (Prediction, Condition
+ *           optimization, Architecture switch, Nearest literature) —
+ *           each panel one click away, no scrolling.
+ */
+.predict-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/*
+ * Settings toolbar: two labelled parameter groups + the Predict action, all
+ * on a single non-wrapping row. Each group stacks its section label above
+ * its fields, separated from the next group by a thin vertical divider.
+ * Fields wrap *inside* a group when space is tight (so the group gets
+ * taller) but the action never wraps onto its own row — it stays anchored
+ * to the right of the bar. At very narrow widths the whole bar stacks.
+ */
+.settings-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px 24px;
+  align-items: stretch;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 14px 18px;
+}
+
+.settings-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0; /* allow internal field-wrap rather than overflow */
+}
+
+/* Separate one group from the next. Keyed on an actual following group, not
+   on :last-of-type, which counts every div in the bar including the action. */
+.settings-bar-group + .settings-bar-group {
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
+}
+
+.settings-bar-group h4 {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #738091;
+  white-space: nowrap;
+}
+
+.settings-bar-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: flex-end;
+}
+
+.settings-bar-group .bp6-form-group {
+  margin-bottom: 0;
+  min-width: 120px;
+  flex: 1 1 120px;
+}
+
+.settings-bar-group .bp6-form-group label.bp6-label {
+  font-size: 0.75rem;
+  margin-bottom: 3px;
+  color: #5c6570;
+}
+
+.settings-bar-action {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* On narrow viewports, allow the toolbar to stack rather than overflow. */
+@media (max-width: 800px) {
+  .settings-bar {
+    flex-wrap: wrap;
+  }
+
+  .settings-bar-group + .settings-bar-group {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .settings-bar-action {
+    margin-left: 0;
+  }
+}
+
+.main-row {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .main-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Molecule editors column ───────────────────────────────── */
+
+.editors-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.molecule-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.molecule-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: white;
+  border-bottom: 1px solid #e8ecf0;
+}
+
+.molecule-card-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1c2127;
+}
+
+.molecule-card-preview {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  min-height: 158px;
+}
+
+.molecule-card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.18s;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.molecule-card-preview:hover .molecule-card-overlay {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.molecule-card-edit-hint {
+  opacity: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  background: white;
+  border: 1.5px solid #d3d8de;
+  border-radius: 4px;
+  padding: 4px 12px;
+  box-shadow: var(--shadow);
+  transition: opacity 0.18s;
+}
+
+.molecule-card-preview:hover .molecule-card-edit-hint {
+  opacity: 1;
+}
+
+/* ── Params + results column ───────────────────────────────── */
+
+.center-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .params-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.params-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.params-card h3 {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f2044;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e8ecf0;
+  padding-bottom: 8px;
+}
+
+.predict-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Results column ────────────────────────────────────────── */
+
+.results-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Prediction card ───────────────────────────────────────── */
+
+.prediction-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.prediction-card h2 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2044;
+}
+
+.prediction-timestamp {
+  font-size: 0.75rem;
+  color: #738091;
+  margin-bottom: 12px;
+}
+
+.predicted-class-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.predicted-class-label {
+  font-size: 0.85rem;
+  color: #5c6570;
+}
+
+.predicted-class-name {
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 2px 10px;
+  border-radius: 4px;
+  color: white;
+}
+
+.confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.confidence-label {
+  font-size: 0.85rem;
+  color: #5c6570;
+  white-space: nowrap;
+}
+
+.confidence-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1c2127;
+}
+
+.confidence-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: #e8ecf0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.confidence-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.class-probs-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #738091;
+  margin-bottom: 8px;
+}
+
+.class-probs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.class-probs-table tr {
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.class-probs-table tr:last-child {
+  border-bottom: none;
+}
+
+.class-probs-table tr.predicted {
+  background: #f0f4f8;
+  font-weight: 600;
+}
+
+.class-probs-table td {
+  padding: 5px 8px;
+  font-size: 0.85rem;
+}
+
+.class-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.class-prob-bar-cell {
+  width: 60%;
+}
+
+.class-prob-bar-bg {
+  height: 6px;
+  background: #e8ecf0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.class-prob-bar {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ── Optimization grid ─────────────────────────────────────── */
+
+.optim-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.optim-card h2 {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2044;
+}
+
+.optim-grid-wrap {
+  overflow-x: auto;
+}
+
+.optim-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.optim-grid th {
+  padding: 6px 10px;
+  text-align: center;
+  font-weight: 600;
+  background: #f0f4f8;
+  color: #5c6570;
+  white-space: nowrap;
+}
+
+.optim-grid th.solvent-col {
+  text-align: left;
+}
+
+.optim-grid td {
+  padding: 5px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.optim-solvent-cell {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.optim-solvent-name {
+  font-weight: 600;
+}
+
+.optim-solvent-logp {
+  font-size: 0.75rem;
+  color: #738091;
+}
+
+.optim-pred-cell {
+  border-radius: 4px;
+  font-weight: 700;
+  color: white;
+  min-width: 60px;
+  height: 40px;
+  cursor: default;
+  position: relative;
+}
+
+.optim-pred-cell.solubility-issue::after {
+  content: '⚠';
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 9px;
+}
+
+.optim-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.optim-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: #5c6570;
+}
+
+.optim-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+/* ── Nearest results table ─────────────────────────────────── */
+
+.nearest-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.nearest-card h2 {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2044;
+}
+
+.nearest-table-wrap {
+  overflow-x: auto;
+}
+
+.nearest-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.nearest-table th {
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 600;
+  background: #f0f4f8;
+  color: #5c6570;
+  white-space: nowrap;
+  border-bottom: 2px solid #e8ecf0;
+}
+
+.nearest-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #f0f4f8;
+  vertical-align: middle;
+}
+
+.nearest-table tr:last-child td {
+  border-bottom: none;
+}
+
+.nearest-table tr:hover td {
+  background: #f7fafc;
+}
+
+.mol-display {
+  display: flex;
+  justify-content: center;
+}
+
+.similarity-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: #e8ecf0;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.arch-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.doi-link {
+  color: #1c6fd4;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.doi-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Architecture switch card ──────────────────────────────── */
+
+.arch-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.arch-card h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2044;
+}
+
+.arch-baseline {
+  font-size: 0.83rem;
+  color: #5c6570;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: #f7fafc;
+  border-radius: 4px;
+  border-left: 3px solid #d3d8de;
+}
+
+.arch-counterfactual {
+  padding: 10px;
+  border-radius: 4px;
+  background: #f7fafc;
+  border-left: 3px solid;
+  margin-bottom: 8px;
+  font-size: 0.83rem;
+}
+
+.arch-cf-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.arch-cf-details {
+  display: flex;
+  gap: 14px;
+  color: #5c6570;
+  flex-wrap: wrap;
+}
+
+.arch-cf-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Template dialog ───────────────────────────────────────── */
+
+.template-dialog-body {
+  padding: 16px;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.template-item {
+  cursor: pointer;
+  border: 2px solid #e8ecf0;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.template-item:hover {
+  border-color: #1c6fd4;
+  background: #f0f7ff;
+}
+
+.template-item:hover .template-name {
+  color: #1c6fd4;
+}
+
+.template-name {
+  font-size: 0.75rem;
+  color: #1c2127;
+  margin-top: 4px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ── Loading / error states ────────────────────────────────── */
+
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  color: #5c6570;
+  font-size: 0.9rem;
+}
+
+.error-banner {
+  padding: 12px 16px;
+  background: #fff0f0;
+  border: 1px solid #f5a9a9;
+  border-radius: var(--border-radius);
+  color: #a61a0a;
+  font-size: 0.88rem;
+}
+
+/* ── Data tab ──────────────────────────────────────────────── */
+
+.data-tab {
+  max-width: 1400px;
+  padding: 8px 0;
+}
+
+.data-tab-search {
+  max-width: 320px;
+  margin-bottom: 24px;
+}
+
+.data-section-title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2044;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e8ecf0;
+  padding-bottom: 8px;
+}
+
+.data-section-count {
+  font-weight: 400;
+  color: #738091;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.molecule-browse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.molecule-browse-card {
+  background: white;
+  border: 1px solid #e8ecf0;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.molecule-browse-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #1c2127;
+  line-height: 1.3;
+}
+
+.molecule-browse-smiles {
+  font-size: 0.72rem;
+  color: #738091;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.data-empty {
+  color: #738091;
+  font-style: italic;
+  font-size: 0.88rem;
+}
+
+/* ── About page ────────────────────────────────────────────── */
+
+.about-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+.about-content h2 {
+  color: #0f2044;
+  border-bottom: 2px solid #e8ecf0;
+  padding-bottom: 8px;
+}
+
+.about-content p {
+  line-height: 1.7;
+  color: #404854;
+}
+
+.about-content a {
+  color: #1c6fd4;
+}
+
+.about-citation {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-left: 3px solid #c0cad6;
+  background: #f5f8fa;
+  border-radius: 0 4px 4px 0;
+  color: #404854;
+  font-style: normal;
+  line-height: 1.7;
+}
+
+/* ── User Guide ─────────────────────────────────────────────── */
+
+.guide-content h3 {
+  color: #0f2044;
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 16px 0 24px;
+}
+
+.guide-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.guide-step-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f2044;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 2px;
+}
+
+.guide-step-body {
+  flex: 1;
+}
+
+.guide-step-body h3 {
+  margin-top: 4px;
+}
+
+.guide-params {
+  margin: 8px 0;
+}
+
+.guide-params dt {
+  font-weight: 600;
+  color: #0f2044;
+  margin-top: 10px;
+}
+
+.guide-params dd {
+  margin: 2px 0 0 16px;
+  line-height: 1.6;
+  color: #404854;
+}
+
+/* ── Utilities ─────────────────────────────────────────────── */
+
+.solubility-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: #664d03;
+  font-weight: 500;
+}
+
+/* ── Lookup / model agreement indicator ─────────────────────── */
+
+/*
+ * Surfaces whether the nearest-neighbour literature lookup agrees with the
+ * model prediction (the basis of the paper's voting model — predictions
+ * where they disagree are discarded). Calm green for agreement, amber
+ * for disagreement; hidden entirely when the lookup pool returned nothing.
+ */
+
+.lookup-agreement-row {
+  margin: 6px 0 14px;
+  font-size: 0.82rem;
+}
+
+.lookup-agree {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #e6f4ea;
+  border: 1px solid #34a853;
+  border-radius: 4px;
+  color: #1e4620;
+  font-weight: 500;
+}
+
+.lookup-disagree {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #664d03;
+  font-weight: 500;
+}
+
+.lookup-disagree-class {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+/* ── API docs tab ──────────────────────────────────────────── */
+
+.api-docs-tab .swagger-ui .info {
+  margin: 16px 0;
+}
+
+.api-docs-tab .swagger-ui .wrapper {
+  padding: 0;
+}
+
+/* ── Results tab ────────────────────────────────────────────── */
+
+.results-tab {
+  max-width: 960px;
+}
+
+.results-split {
+  margin-top: 28px;
+}
+
+.results-split h3 {
+  color: #0f2044;
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.results-split-n {
+  color: #8a94a0;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.results-headline {
+  margin: 4px 0 14px;
+  color: #404854;
+  line-height: 1.6;
+}
+
+.results-verify {
+  margin-top: 28px;
+  padding: 12px 16px;
+  background: #f5f8fa;
+  border-left: 3px solid #c0cad6;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.9rem;
+  color: #404854;
+  line-height: 1.6;
+}
+
+.results-error {
+  color: #a3261f;
+}
+
+/* Per-class metrics table */
+.metrics-table {
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  margin-bottom: 16px;
+}
+
+.metrics-table th,
+.metrics-table td {
+  padding: 6px 14px;
+  text-align: right;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.metrics-table thead th {
+  background: #f0f4f8;
+  color: #5c6570;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 2px solid #e8ecf0;
+}
+
+.metrics-table .metrics-class {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.metrics-table .metrics-macro td,
+.metrics-table .metrics-macro .metrics-class {
+  font-weight: 700;
+  border-top: 2px solid #e8ecf0;
+}
+
+.metrics-swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+/* Confusion matrices */
+.confusion-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.confusion-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5c6570;
+  margin-bottom: 6px;
+}
+
+.confusion-table {
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.confusion-table th {
+  color: #8a94a0;
+  font-weight: 600;
+  padding: 3px 6px;
+}
+
+.confusion-table .confusion-axis {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.confusion-table td {
+  width: 46px;
+  height: 38px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.confusion-rowlabel {
+  text-align: right;
+}
+
+.confusion-caption {
+  font-size: 0.72rem;
+  color: #8a94a0;
+  margin-top: 4px;
+}
+
+/* Class pill */
+.pred-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Individual predictions browser */
+.ind-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.ind-toggle {
+  display: inline-flex;
+  border: 1px solid #d4dbe2;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ind-toggle-btn {
+  border: none;
+  background: #fff;
+  padding: 6px 12px;
+  font-size: 0.84rem;
+  cursor: pointer;
+  color: #404854;
+}
+
+.ind-toggle-btn.active {
+  background: #0f2044;
+  color: #fff;
+}
+
+.ind-select,
+.ind-search {
+  padding: 6px 10px;
+  font-size: 0.84rem;
+  border: 1px solid #d4dbe2;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a2733;
+}
+
+.ind-search {
+  flex: 1;
+  min-width: 180px;
+}
+
+.ind-table-wrap {
+  overflow-x: auto;
+}
+
+.ind-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.ind-table th {
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 600;
+  background: #f0f4f8;
+  color: #5c6570;
+  white-space: nowrap;
+  border-bottom: 2px solid #e8ecf0;
+}
+
+.ind-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #f0f4f8;
+  vertical-align: middle;
+}
+
+.ind-row-wrong {
+  background: #fdf4f3;
+}
+
+.ind-x {
+  color: #a3261f;
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+.ind-kept {
+  color: #1b7a3d;
+  font-weight: 600;
+}
+
+.ind-abstain {
+  color: #8a6d1a;
+  font-weight: 600;
+}
+
+.ind-empty {
+  text-align: center;
+  color: #8a94a0;
+  padding: 18px;
+}
+
+.ind-pager {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 0.84rem;
+  color: #5c6570;
+}
+
+.ind-pager button {
+  border: 1px solid #d4dbe2;
+  background: #fff;
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  color: #0f2044;
+}
+
+.ind-pager button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── Nearest-results sort/filter ── */
+
+.nearest-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.nearest-text-filter {
+  min-width: 220px;
+}
+
+.nearest-count {
+  font-size: 0.8rem;
+  color: #5c6570;
+  font-weight: 600;
+}
+
+.nearest-th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+
+.nearest-th-sort:hover {
+  background: #e6edf4;
+}
+
+.nearest-th-sort.is-active {
+  color: #0f2044;
+}
+
+.nearest-th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nearest-sort-icon {
+  color: #9aa5b1;
+}
+
+.nearest-th-sort.is-active .nearest-sort-icon {
+  color: #1c6fd4;
+}
+
+.nearest-empty {
+  text-align: center;
+  color: #5c6570;
+  font-style: italic;
+  padding: 18px 10px;
+}
+
+/* ── Prediction sub-tabs ───────────────────────────────────── */
+
+/*
+ * The prediction results column is rendered as Blueprint Tabs so that the
+ * "Condition optimization" and "Architecture switch" panels are no longer
+ * always-visible. Only one panel is shown at a time, which keeps the overall
+ * page narrow enough for small laptop screens.
+ */
+
+.results-subtabs {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 12px 16px 16px;
+}
+
+/*
+ * Segmented-control style: the tab list is a grey "track" containing
+ * pill-shaped tabs. The active tab is a white pill with a subtle shadow,
+ * which makes the current panel obvious at a glance; inactive tabs are
+ * muted text on transparent; disabled tabs are visibly inert.
+ */
+.results-subtabs .bp6-tab-list {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background: #eef2f6;
+  border-radius: 8px;
+  border-bottom: none;
+}
+
+.results-subtabs .bp6-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5c6570;
+  background: transparent;
+  border-radius: 6px;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+
+.results-subtabs
+  .bp6-tab:hover:not([aria-disabled='true']):not([aria-selected='true']) {
+  color: #1e3a5f;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.results-subtabs .bp6-tab[aria-selected='true'] {
+  color: #0f2044;
+  background: linear-gradient(
+    to bottom,
+    white calc(100% - 3px),
+    #f5a623 calc(100% - 3px)
+  );
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(15, 32, 68, 0.14);
+}
+
+.results-subtabs .bp6-tab[aria-disabled='true'] {
+  color: #b1bac4;
+  cursor: not-allowed;
+}
+
+/* Hide Blueprint's default sliding underline indicator — the pill background
+   does the work instead. */
+.results-subtabs .bp6-tab-indicator-wrapper {
+  display: none;
+}
+
+/* The panels host cards that already carry their own surface styling, so the
+   tab container should not double up on padding/background for them. */
+.results-subtabs .bp6-tab-panel {
+  margin-top: 0;
+}
+
+.results-subtabs .bp6-tab-panel .prediction-card {
+  box-shadow: none;
+  padding: 0;
+}
+
+/* ── Same-monomer literature rows ──────────────────────────── */
+
+/*
+ * The nearest-neighbour lookup guarantees a slot to literature reactions
+ * that use the exact same monomer pair as the query, even when an unusual
+ * solvent would otherwise drop them out of the top-k. These rows are marked
+ * so an exact-pair match is distinguishable from a similarity-ranked one.
+ */
+
+.nearest-table tr.is-same-monomer {
+  background: #fff6e6;
+}
+
+.nearest-table tr.is-same-monomer:hover {
+  background: #ffedcc;
+}
+
+.same-monomer-badge {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #f5a623;
+  color: #3a2a06;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ── Share dialog ──────────────────────────────────────────── */
+
+.share-section {
+  margin-bottom: 18px;
+}
+
+.share-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.share-feature-note {
+  margin: -4px 0 10px 26px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.share-code {
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+.share-code--block {
+  white-space: pre;
+  overflow-x: auto;
+  word-break: normal;
+}
+
+.share-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.settings-bar-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}

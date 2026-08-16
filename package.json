@@ -1,11 +1,51 @@
 {
-  "name": "polycarp-cheminfo-org",
+  "name": "polycarp.cheminfo.org",
   "version": "1.0.0",
+  "description": "Copolymer reactivity prediction — microstructure of radical copolymers from monomer pair, solvent and reaction conditions",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "npm run build --prefix frontend",
-    "check-types": "npm run check-types --prefix frontend",
-    "dev": "npm run dev --prefix frontend",
-    "preview": "npm run preview --prefix frontend"
+    "build": "vite build",
+    "check-types": "tsc --noEmit",
+    "dev": "vite",
+    "eslint": "eslint .",
+    "eslint-fix": "eslint . --fix",
+    "prettier": "prettier --check .",
+    "prettier-write": "prettier --write .",
+    "preview": "vite preview",
+    "test": "npm run test-only && npm run check-types && npm run eslint && npm run prettier",
+    "test-only": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^6.18.0",
+    "@blueprintjs/icons": "^6.13.0",
+    "@preact/signals-react": "^3.12.0",
+    "cheminfo-font": "^1.28.0",
+    "openchemlib": "^9.25.0",
+    "react": "^19.2.8",
+    "react-cheminfo": "^0.2.0",
+    "react-dom": "^19.2.8",
+    "react-ocl": "^8.7.2",
+    "react-science": "^23.0.0",
+    "swagger-ui-react": "^5.32.13"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@types/swagger-ui-react": "^5.18.0",
+    "@vitejs/plugin-react": "^6.0.5",
+    "@vitest/coverage-v8": "^4.1.5",
+    "@zakodium/tsconfig": "^1.0.5",
+    "eslint": "^9.39.4",
+    "eslint-config-zakodium": "^20.0.0",
+    "prettier": "^3.9.6",
+    "typescript": "^6",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.5"
+  },
+  "overrides": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   }
 }

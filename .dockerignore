@@ -1,10 +1,9 @@
+compose*.yaml
+.env
 node_modules
 dist
 coverage
-
-.env
-
+.git
+.github
 .claude
 .deploy
-.DS_Store
-*.log

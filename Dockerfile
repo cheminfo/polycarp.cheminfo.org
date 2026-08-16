@@ -1,14 +1,16 @@
-# Build stage
 FROM node:24-alpine AS builder
 WORKDIR /app
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci --ignore-scripts
-COPY frontend/ .
-ARG VITE_API_URL=/api
-RUN VITE_API_URL=$VITE_API_URL npm run build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-# Production stage
 FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY html/ /usr/share/nginx/view/
+# The site is copied to a tmpfs at startup so the entrypoint can inject
+# TRACKING_SCRIPT while the root filesystem stays read-only.
+COPY --from=builder /app/dist /app/site
+COPY html/ /app/site-view/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker-entrypoint.sh /docker-entrypoint.d/50-polycarp.sh
+RUN chmod +x /docker-entrypoint.d/50-polycarp.sh
+EXPOSE 80
