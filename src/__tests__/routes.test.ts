@@ -1,6 +1,7 @@
+import { pageDocumentMeta } from 'react-cheminfo/core';
 import { expect, test } from 'vitest';
 
-import { ROUTES, routeForPath, titleForRoute } from '../routes.ts';
+import { ROUTES, routeForPath } from '../routes.ts';
 
 test('every route resolves to itself', () => {
   for (const route of ROUTES) {
@@ -19,13 +20,14 @@ test('an unknown address falls back to the home page', () => {
 });
 
 test('the title is the page name then the site name', () => {
-  expect(titleForRoute(routeForPath('/results'))).toBe(
-    'Model performance — PolyCarp',
-  );
+  expect(
+    pageDocumentMeta({ site: 'polycarp', routes: ROUTES, url: '/results' })
+      .title,
+  ).toBe('Model performance — PolyCarp');
 });
 
 test('every page has a distinct title and description', () => {
-  const titles = new Set(ROUTES.map((route) => titleForRoute(route)));
+  const titles = new Set(ROUTES.map((route) => route.title));
   const descriptions = new Set(ROUTES.map((route) => route.description));
   expect(titles.size).toBe(ROUTES.length);
   expect(descriptions.size).toBe(ROUTES.length);

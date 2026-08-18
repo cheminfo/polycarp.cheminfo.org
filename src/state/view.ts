@@ -1,10 +1,14 @@
 import { signal } from '@preact/signals-react';
+import type { ShareConfig } from 'react-cheminfo/core';
+import {
+  isHidden as isPartHidden,
+  parseShareConfig,
+} from 'react-cheminfo/core';
 
 import type { RoutePath } from '../routes.ts';
 import { routeForPath } from '../routes.ts';
 
-import type { ShareConfig } from './shareConfig.ts';
-import { DEFAULT_SHARE_CONFIG, parseShareConfig } from './shareConfig.ts';
+import { SHARE_VOCABULARY } from './shareConfig.ts';
 
 export type ResultsPanel =
   'prediction' | 'optimization' | 'architecture' | 'lookup';
@@ -15,8 +19,9 @@ function initialPath(): RoutePath {
 }
 
 function initialShareConfig(): ShareConfig {
-  if (globalThis.location === undefined) return DEFAULT_SHARE_CONFIG;
-  return parseShareConfig(globalThis.location.search);
+  const search =
+    globalThis.location === undefined ? '' : globalThis.location.search;
+  return parseShareConfig(search, SHARE_VOCABULARY);
 }
 
 /** Ephemeral cross-component UI state. Session-only. */
@@ -33,5 +38,5 @@ export const view = {
 
 /** True when the named feature is switched off by the current share link. */
 export function isHidden(key: string): boolean {
-  return view.share.value.hide.includes(key as never);
+  return isPartHidden(view.share.value, key);
 }

@@ -1,19 +1,24 @@
 import { Icon } from '@blueprintjs/core';
 import { useSignals } from '@preact/signals-react/runtime';
 import type { ReactNode } from 'react';
-import { EcosystemButton } from 'react-cheminfo/ui';
+import { EcosystemButton, SiteHeader } from 'react-cheminfo/ui';
 
-import type { RoutePath } from '../../routes.ts';
 import { ROUTES } from '../../routes.ts';
 import { state } from '../../state/index.ts';
 import { navigate } from '../../state/router.ts';
 
-import { BrandMark, Wordmark } from './Brand.tsx';
 import { ShareDialog } from './ShareDialog.tsx';
 
 /** The database is browsed in the NOMAD polymerization OASIS, not in-app. */
 const NOMAD_DATA_URL =
   'https://nomad-lab.eu/prod/v1/oasis/gui/search/polymerization';
+
+const NAV = ROUTES.map((route) => ({
+  id: route.path,
+  label: route.label,
+  href: route.path,
+  onSelect: () => navigate(route.path),
+}));
 
 /**
  * The site chrome: brand at the left, the pages next to it, the utilities
@@ -31,30 +36,14 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <header className="app-header no-print">
-        <div className="app-header__inner">
-          <a
-            href="/"
-            className="brand"
-            title="polycarp.cheminfo.org"
-            onClick={(event) => {
-              event.preventDefault();
-              navigate('/');
-            }}
-          >
-            <BrandMark size={24} />
-            <Wordmark />
-          </a>
-
-          <nav className="app-header-nav">
-            {ROUTES.map((route) => (
-              <NavLink key={route.path} path={route.path} active={active}>
-                {route.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="app-header-actions">
+      <SiteHeader
+        siteId="polycarp"
+        nav={NAV}
+        activeId={active}
+        onHome={() => navigate('/')}
+        markSize={24}
+        actions={
+          <>
             <a
               className="nav-link"
               href={NOMAD_DATA_URL}
@@ -74,35 +63,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Icon icon="share" size={14} />
               Share
             </button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="app-content">{children}</div>
       <ShareDialog />
     </>
-  );
-}
-
-function NavLink({
-  path,
-  active,
-  children,
-}: {
-  path: RoutePath;
-  active: RoutePath;
-  children: ReactNode;
-}) {
-  return (
-    <a
-      className={`nav-link${path === active ? ' nav-link--active' : ''}`}
-      href={path}
-      onClick={(event) => {
-        event.preventDefault();
-        navigate(path);
-      }}
-    >
-      {children}
-    </a>
   );
 }

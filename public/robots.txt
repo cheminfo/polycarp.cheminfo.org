@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-# The prediction API is an endpoint, not a page.
-Disallow: /api/
-
-Sitemap: https://polycarp.cheminfo.org/sitemap.xml

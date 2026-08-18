@@ -1,15 +1,17 @@
+import type { RouteMeta } from 'react-cheminfo/core';
+
 export const SITE_NAME = 'PolyCarp';
 export const SITE_URL = 'https://polycarp.cheminfo.org';
 
-export interface RouteDefinition {
-  /** Absolute path, always starting with `/` and never ending with one. */
-  path: string;
+/**
+ * A routed page: what a crawler is told about it, plus the label the header
+ * shows. `path`, `title`, `short` and `description` come from `RouteMeta`; a
+ * description is one sentence of 110–160 characters, the length a search
+ * result shows.
+ */
+export interface RouteDefinition extends RouteMeta {
   /** Label shown in the header navigation. */
   label: string;
-  /** Page name, prefixed to the site name in `<title>`. */
-  title: string;
-  /** One sentence, 110–160 characters, describing this page for search. */
-  description: string;
 }
 
 /**
@@ -22,6 +24,7 @@ export const ROUTES = [
     path: '/',
     label: 'Prediction',
     title: 'Copolymer microstructure prediction',
+    short: 'Prediction',
     description:
       'Predict whether a radical copolymer is alternating, random to block-like or gradient from its monomer pair, solvent and reaction conditions.',
   },
@@ -65,9 +68,4 @@ export function routeForPath(pathname: string): Route {
       ? pathname.slice(0, -1)
       : pathname;
   return ROUTES.find((route) => route.path === normalized) ?? ROUTES[0];
-}
-
-/** The `<title>` for a route: the page name, then the site name. */
-export function titleForRoute(route: RouteDefinition): string {
-  return `${route.title} — ${SITE_NAME}`;
 }

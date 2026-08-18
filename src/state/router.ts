@@ -1,7 +1,10 @@
-import type { RoutePath } from '../routes.ts';
-import { SITE_URL, routeForPath, titleForRoute } from '../routes.ts';
+import { effect } from '@preact/signals-react';
+import { applyShareConfig, startDocumentMeta } from 'react-cheminfo/core';
 
-import { serializeShareConfig } from './shareConfig.ts';
+import type { RoutePath } from '../routes.ts';
+import { ROUTES, routeForPath } from '../routes.ts';
+
+import { SHARE_VOCABULARY } from './shareConfig.ts';
 import { view } from './view.ts';
 
 /**
@@ -10,35 +13,29 @@ import { view } from './view.ts';
  * @param path - The routed path to move to.
  */
 export function navigate(path: RoutePath): void {
-  const query = serializeShareConfig(
-    view.share.value,
+  const query = applyShareConfig(
     globalThis.location.search,
+    view.share.value,
+    SHARE_VOCABULARY,
   );
   globalThis.history.pushState(null, '', `${path}${query ? `?${query}` : ''}`);
   view.path.value = path;
-  syncDocumentMeta();
 }
 
-/** Starts listening for back/forward, and titles the initial page. */
+/** Starts listening for back/forward, and titles the page on screen. */
 export function startRouter(): () => void {
   const onPopState = () => {
     view.path.value = routeForPath(globalThis.location.pathname).path;
-    syncDocumentMeta();
   };
   globalThis.addEventListener('popstate', onPopState);
-  syncDocumentMeta();
-  return () => globalThis.removeEventListener('popstate', onPopState);
-}
-
-/**
- * Keeps the tab title and the canonical link in step after an in-app move. The
- * description and the social card were already read off the wire by then, so
- * nothing else is rewritten here.
- */
-function syncDocumentMeta(): void {
-  const route = routeForPath(globalThis.location.pathname);
-  document.title = titleForRoute(route);
-  const canonical = document.querySelector('link[rel="canonical"]');
-  // The canonical drops the query string: a shared configuration is not a page.
-  canonical?.setAttribute('href', `${SITE_URL}${route.path}`);
+  const stopMeta = startDocumentMeta({
+    site: 'polycarp',
+    routes: ROUTES,
+    url: () => view.path.value,
+    follow: effect,
+  });
+  return () => {
+    stopMeta();
+    globalThis.removeEventListener('popstate', onPopState);
+  };
 }
