@@ -6,8 +6,11 @@
 
 :root {
   /* The two colours this site owns: the two comonomers of a chain. */
-  --brand: #be185d;
-  --brand-alt: #1d4ed8;
+  --brand: #701a75;
+  --brand-alt: #a3e635;
+  /* The lime carries the mark at 16px but sits at 1.7:1 on white, so the
+     wordmark's second half takes this darkened 5.0:1 form instead. */
+  --brand-alt-text: #4d7c0f;
   --accent: var(--brand);
 
   /* Model class colours: these say what a class *is*, so they keep their own

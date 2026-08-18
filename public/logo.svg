@@ -1,9 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 32" width="210" height="32">
-  <path d="M6 22.5 16 9.5 26 22.5" stroke="#be185d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-  <circle cx="6" cy="22.5" r="5" fill="#be185d" />
-  <circle cx="26" cy="22.5" r="5" fill="#be185d" />
-  <circle cx="16" cy="9.5" r="6" fill="#1d4ed8" />
+  <rect x="0" y="0" width="32" height="32" rx="7" fill="#701a75" />
+  <path
+    d="M6.5 20 12.5 12 19.5 20 25.5 12"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="6.5" cy="20" r="3" fill="#ffffff" />
+  <circle cx="12.5" cy="12" r="3" fill="#ffffff" />
+  <circle cx="19.5" cy="20" r="3" fill="#a3e635" />
+  <circle cx="25.5" cy="12" r="3" fill="#ffffff" />
   <text x="42" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" font-weight="700">
-    <tspan fill="#be185d">Poly</tspan><tspan fill="#1d4ed8">Carp</tspan>
+    <tspan fill="#701a75">Poly</tspan><tspan fill="#4d7c0f">Carp</tspan>
   </text>
 </svg>
