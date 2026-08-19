@@ -1,7 +1,8 @@
 import { Icon } from '@blueprintjs/core';
 import { useSignals } from '@preact/signals-react/runtime';
 import type { ReactNode } from 'react';
-import { EcosystemButton, SiteHeader } from 'react-cheminfo/ui';
+import type { NavItem } from 'react-cheminfo/ui';
+import { EcosystemButton, NavLink, SiteHeader } from 'react-cheminfo/ui';
 
 import { ROUTES } from '../../routes.ts';
 import { state } from '../../state/index.ts';
@@ -13,12 +14,24 @@ import { ShareDialog } from './ShareDialog.tsx';
 const NOMAD_DATA_URL =
   'https://nomad-lab.eu/prod/v1/oasis/gui/search/polymerization';
 
-const NAV = ROUTES.map((route) => ({
-  id: route.path,
-  label: route.label,
-  href: route.path,
-  onSelect: () => navigate(route.path),
-}));
+const ABOUT_PATH = '/about';
+
+/** The pages, at the left. About is a utility, so it is not one of them. */
+const NAV = ROUTES.filter((route) => route.path !== ABOUT_PATH).map(
+  (route) => ({
+    id: route.path,
+    label: route.label,
+    href: route.path,
+    onSelect: () => navigate(route.path),
+  }),
+);
+
+const ABOUT_ITEM: NavItem = {
+  id: ABOUT_PATH,
+  label: 'About',
+  href: ABOUT_PATH,
+  onSelect: () => navigate(ABOUT_PATH),
+};
 
 /**
  * The site chrome: brand at the left, the pages next to it, the utilities
@@ -44,6 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         markSize={24}
         actions={
           <>
+            <NavLink item={ABOUT_ITEM} active={active === ABOUT_PATH} />
             <a
               className="nav-link"
               href={NOMAD_DATA_URL}
