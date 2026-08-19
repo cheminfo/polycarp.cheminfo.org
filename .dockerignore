@@ -7,3 +7,5 @@ coverage
 .github
 .claude
 .deploy
+playwright-report
+test-results

@@ -20,6 +20,7 @@ Checks — `npm run test` runs all of them (tests, type-check, ESLint, Prettier)
 
 ```sh
 npm run test-only      # vitest with coverage
+npm run test-e2e       # Playwright against the dev server, with /api answered from a fixture
 npm run check-types    # tsc --noEmit
 npm run eslint-fix
 npm run prettier-write

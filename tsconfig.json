@@ -5,5 +5,5 @@
     "noUncheckedIndexedAccess": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "vite*.ts"]
+  "include": ["src", "e2e", "vite*.ts", "playwright.config.ts"]
 }
