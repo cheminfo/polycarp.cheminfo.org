@@ -1,6 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime';
 import type { ComponentType } from 'react';
 import { useEffect } from 'react';
+import { SiteTheme } from 'react-cheminfo/ui';
 
 import { AppShell } from './components/shared/AppShell.tsx';
 import { AboutPage } from './pages/about/AboutPage.tsx';
@@ -25,9 +26,12 @@ export function App() {
   useEffect(startRouter, []);
 
   return (
-    <AppShell>
-      <RoutedPage />
-    </AppShell>
+    <>
+      <SiteTheme siteId="polycarp" />
+      <AppShell>
+        <RoutedPage />
+      </AppShell>
+    </>
   );
 }
 
