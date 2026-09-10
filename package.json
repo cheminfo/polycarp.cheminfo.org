@@ -26,7 +26,7 @@
     "cheminfo-font": "^1.28.0",
     "openchemlib": "^9.25.0",
     "react": "^19.2.8",
-    "react-cheminfo": "^0.9.0",
+    "react-cheminfo": "^0.11.0",
     "react-dom": "^19.2.8",
     "react-ocl": "^8.7.2",
     "react-science": "^23.0.0",
