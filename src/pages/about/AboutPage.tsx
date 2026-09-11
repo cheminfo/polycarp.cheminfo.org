@@ -2,7 +2,7 @@ import { AboutPage as SharedAboutPage, AboutSection } from 'react-cheminfo/ui';
 
 import { ABOUT } from '../../about.ts';
 
-const MODEL_REPOSITORY = 'https://github.com/lamalab-org/copolymer-reactivity';
+const MODEL_REPOSITORY = 'https://github.com/lamalab-org/PolyCARP';
 
 /** About page: the shared record, plus how the model and its data were built. */
 export function AboutPage() {
@@ -53,7 +53,7 @@ export function AboutPage() {
           The paper is in preparation. Until it appears, the preprint and the
           dataset are in{' '}
           <a href={MODEL_REPOSITORY} target="_blank" rel="noreferrer">
-            lamalab-org/copolymer-reactivity
+            lamalab-org/PolyCARP
           </a>
           , which is also where a problem with the model or the API is reported.
         </p>
