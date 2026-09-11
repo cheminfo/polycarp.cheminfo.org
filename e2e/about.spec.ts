@@ -105,9 +105,6 @@ test('the site says how the model and its dataset were built', async ({
     'Service',
   ]);
   await expect(
-    built.getByRole('link', { name: 'lamalab-org/copolymer-reactivity' }),
-  ).toHaveAttribute(
-    'href',
-    'https://github.com/lamalab-org/copolymer-reactivity',
-  );
+    built.getByRole('link', { name: 'lamalab-org/PolyCARP' }),
+  ).toHaveAttribute('href', 'https://github.com/lamalab-org/PolyCARP');
 });
