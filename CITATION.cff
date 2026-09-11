@@ -1,0 +1,64 @@
+cff-version: 1.2.0
+title: 'PolyCarp: condition-aware prediction of copolymer architecture'
+abstract: 'PolyCarp predicts whether a radical copolymerisation gives an alternating, random to block-like or gradient copolymer. A gradient-boosted classifier reads XTB descriptors of the two monomers, the solvent log P, the temperature and the polymerisation type, and a voting layer compares its answer with the closest same-monomer reaction in a database of 3,791 copolymerisations extracted from 1,206 publications. This repository holds the web frontend; the predictions are served by the copolymer-reactivity backend.'
+repository-artifact: https://polycarp.cheminfo.org
+repository-code: https://github.com/cheminfo/polycarp.cheminfo.org
+message: 'If you use this software, please cite the preprint below.'
+type: software
+authors:
+  - family-names: 'Schilling-Wilhelmi'
+    given-names: 'Mara'
+    affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+    orcid: 'https://orcid.org/0009-0007-4392-5918'
+  - family-names: 'Bulgakov'
+    given-names: 'Boris'
+    affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+    orcid: 'https://orcid.org/0000-0001-6208-3962'
+  - family-names: 'Patiny'
+    given-names: 'Luc'
+    affiliation: 'Zakodium Sàrl, Switzerland'
+    orcid: 'https://orcid.org/0000-0002-4943-2643'
+  - family-names: 'Kapoor'
+    given-names: 'Sarthak'
+    affiliation: 'Physics Department and CSMB, Humboldt-Universität zu Berlin, Germany'
+    orcid: 'https://orcid.org/0000-0002-1889-6998'
+  - family-names: 'Jablonka'
+    given-names: 'Kevin Maik'
+    affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+    orcid: 'https://orcid.org/0000-0003-4894-4660'
+keywords:
+  - copolymer
+  - polymer architecture
+  - reactivity ratios
+  - radical copolymerization
+  - machine learning
+  - cheminfo
+preferred-citation:
+  type: article
+  title: 'Condition-aware prediction of copolymer architecture'
+  authors:
+    - family-names: 'Schilling-Wilhelmi'
+      given-names: 'Mara'
+      affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+      orcid: 'https://orcid.org/0009-0007-4392-5918'
+    - family-names: 'Bulgakov'
+      given-names: 'Boris'
+      affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+      orcid: 'https://orcid.org/0000-0001-6208-3962'
+    - family-names: 'Patiny'
+      given-names: 'Luc'
+      affiliation: 'Zakodium Sàrl, Switzerland'
+      orcid: 'https://orcid.org/0000-0002-4943-2643'
+    - family-names: 'Kapoor'
+      given-names: 'Sarthak'
+      affiliation: 'Physics Department and CSMB, Humboldt-Universität zu Berlin, Germany'
+      orcid: 'https://orcid.org/0000-0002-1889-6998'
+    - family-names: 'Jablonka'
+      given-names: 'Kevin Maik'
+      affiliation: 'Laboratory of Organic and Macromolecular Chemistry (IOMC), Friedrich Schiller University Jena, Germany'
+      orcid: 'https://orcid.org/0000-0003-4894-4660'
+  journal: 'ChemRxiv'
+  year: 2026
+  month: 6
+  doi: 10.26434/chemrxiv.15004102/v2
+  url: 'https://doi.org/10.26434/chemrxiv.15004102/v2'
