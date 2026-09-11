@@ -63,7 +63,7 @@ test('the utilities sit right: About, Data, Tools, Share', async ({ page }) => {
   await expect(utilities.nth(0)).toHaveText('About');
   await expect(utilities.nth(1)).toHaveAttribute(
     'href',
-    'https://nomad-lab.eu/prod/v1/oasis/gui/search/polymerization',
+    'https://nomad-lab.eu/prod/v1/gui/search/polymerization',
   );
   await expect(utilities.nth(2)).toHaveClass(/ecosystem-button/);
   await expect(utilities.nth(3)).toHaveText('Share');

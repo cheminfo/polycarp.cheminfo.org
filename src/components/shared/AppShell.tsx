@@ -11,8 +11,7 @@ import { navigate } from '../../state/router.ts';
 import { ShareDialog } from './ShareDialog.tsx';
 
 /** The database is browsed in the NOMAD polymerization OASIS, not in-app. */
-const NOMAD_DATA_URL =
-  'https://nomad-lab.eu/prod/v1/oasis/gui/search/polymerization';
+const NOMAD_DATA_URL = 'https://nomad-lab.eu/prod/v1/gui/search/polymerization';
 
 const ABOUT_PATH = '/about';
 

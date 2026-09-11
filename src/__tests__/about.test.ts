@@ -36,6 +36,12 @@ test('the context is the model and the dataset', () => {
   expect(ABOUT.paragraphs?.[1]).toContain('~3,800 copolymerisations');
 });
 
-test('the site asks for no citation of its own yet', () => {
-  expect(ABOUT.cite).toBeUndefined();
+test('it provides the publication citation', () => {
+  expect(ABOUT.cite).toHaveLength(1);
+  expect(ABOUT.cite?.[0]?.reference).toMatchObject({
+    title: 'Condition-aware prediction of copolymer architecture',
+    doi: '10.26434/chemrxiv.15004102/v2',
+    publisher: 'ChemRxiv',
+    year: 2026,
+  });
 });

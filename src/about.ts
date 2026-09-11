@@ -19,6 +19,30 @@ export const ABOUT: AboutContent = {
     "A gradient-boosted classifier reads XTB descriptors of the two monomers, the solvent's log P, the temperature and the polymerisation type. A voting layer compares its answer with the closest same-monomer reaction in the literature, and flags the prediction when the two disagree.",
     'The training set is ~3,800 copolymerisations extracted from ~1,200 publications, each recorded with its solvent, temperature and mechanism — the first dataset at this scale to carry conditions per entry. It is open: the Data link in the header opens it in NOMAD.',
   ],
+  cite: [
+    {
+      what: 'Condition-aware prediction of copolymer architecture',
+      reference: {
+        authors: [
+          { given: 'Mara', family: 'Schilling-Wilhelmi' },
+          { given: 'Boris', family: 'Bulgakov' },
+          { given: 'Luc', family: 'Patiny' },
+          { given: 'Sarthak', family: 'Kapoor' },
+          { given: 'Kevin Maik', family: 'Jablonka' },
+        ],
+        title: 'Condition-aware prediction of copolymer architecture',
+        journal: 'ChemRxiv',
+        journalAbbreviation: 'ChemRxiv',
+        year: 2026,
+        volume: '',
+        issue: '',
+        firstPage: '',
+        lastPage: '',
+        doi: '10.26434/chemrxiv.15004102/v2',
+        publisher: 'ChemRxiv',
+      },
+    },
+  ],
   credits: [
     'openchemlib',
     'react-ocl',
