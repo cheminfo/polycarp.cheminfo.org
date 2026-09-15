@@ -44,7 +44,9 @@ export default defineConfig({
     // the README and this file disagreeing.
     strictPort: true,
     proxy: {
-      '/api': {
+      // Anchored with its slash: a bare `/api` prefix also swallows the
+      // `/api-docs` page and sends it to the live server.
+      '^/api/': {
         target: apiTarget,
         changeOrigin: true,
         secure: true,

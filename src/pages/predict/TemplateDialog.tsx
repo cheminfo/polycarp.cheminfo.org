@@ -1,6 +1,6 @@
 import { Dialog, DialogBody } from '@blueprintjs/core';
+import { Structure } from 'react-cheminfo/structure';
 
-import { MoleculeDisplay } from './MoleculeDisplay.tsx';
 import type { Template } from './data/monomers.ts';
 
 interface Props {
@@ -43,7 +43,7 @@ export function TemplateDialog({
               className="template-item"
               onClick={() => onSelect(t.smiles)}
             >
-              <MoleculeDisplay smiles={t.smiles} width={110} height={80} />
+              <Structure smiles={t.smiles} width={110} height={80} />
               <div className="template-name">{t.name}</div>
             </button>
           ))}

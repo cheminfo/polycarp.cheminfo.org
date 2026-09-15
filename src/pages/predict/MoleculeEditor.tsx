@@ -1,9 +1,8 @@
 import { Button, Dialog, DialogBody, DialogFooter } from '@blueprintjs/core';
 import { useCallback, useRef, useState } from 'react';
-import type { CanvasEditorOnChangeMolecule } from 'react-ocl';
-import { CanvasMoleculeEditor } from 'react-ocl';
+import type { StructureEditorChange } from 'react-cheminfo/structure';
+import { Structure, StructureEditor } from 'react-cheminfo/structure';
 
-import { MoleculeDisplay } from './MoleculeDisplay.tsx';
 import { TemplateDialog } from './TemplateDialog.tsx';
 import type { Template } from './data/monomers.ts';
 
@@ -23,8 +22,7 @@ export function MoleculeEditor({
   onSmilesChange,
   templates,
 }: Props) {
-  const [editorKey, setEditorKey] = useState(0);
-  const [editorInitialSmiles, setEditorInitialSmiles] = useState(smiles);
+  const [editorRevision, setEditorRevision] = useState(0);
   // Held in a ref, not state: the canvas fires onChange on every stroke and
   // the value is only read when the dialog is confirmed.
   const draftSmilesRef = useRef(smiles);
@@ -32,19 +30,14 @@ export function MoleculeEditor({
   const [showTemplates, setShowTemplates] = useState(false);
 
   const handleOpenEditor = useCallback(() => {
-    setEditorInitialSmiles(smiles);
     draftSmilesRef.current = smiles;
-    setEditorKey((k) => k + 1);
+    setEditorRevision((revision) => revision + 1);
     setShowEditor(true);
   }, [smiles]);
 
-  const handleEditorChange = useCallback(
-    (event: CanvasEditorOnChangeMolecule) => {
-      const newSmiles = event.getSmiles();
-      if (newSmiles) draftSmilesRef.current = newSmiles;
-    },
-    [],
-  );
+  const handleEditorChange = useCallback((change: StructureEditorChange) => {
+    if (change.smiles) draftSmilesRef.current = change.smiles;
+  }, []);
 
   const handleDone = useCallback(() => {
     onSmilesChange(draftSmilesRef.current);
@@ -86,7 +79,7 @@ export function MoleculeEditor({
             if (e.key === 'Enter' || e.key === ' ') handleOpenEditor();
           }}
         >
-          <MoleculeDisplay smiles={smiles} width={220} height={140} />
+          <Structure smiles={smiles} width={220} height={140} />
           <div className="molecule-card-overlay">
             <span className="molecule-card-edit-hint">✏ Edit</span>
           </div>
@@ -100,13 +93,14 @@ export function MoleculeEditor({
         style={{ width: EDITOR_W + 2 }}
       >
         <DialogBody style={{ padding: 0, overflow: 'hidden' }}>
-          <CanvasMoleculeEditor
-            key={editorKey}
-            inputValue={editorInitialSmiles}
+          <StructureEditor
             inputFormat="smiles"
+            value={smiles}
+            revision={editorRevision}
+            // Every stroke is kept, because Done may be pressed on the next one.
+            debounce={0}
+            minHeight={EDITOR_H}
             onChange={handleEditorChange}
-            width={EDITOR_W}
-            height={EDITOR_H}
           />
         </DialogBody>
         <DialogFooter

@@ -1,9 +1,16 @@
-import { Icon } from '@blueprintjs/core';
 import { useSignals } from '@preact/signals-react/runtime';
 import type { ReactNode } from 'react';
 import type { NavItem } from 'react-cheminfo/ui';
-import { EcosystemButton, NavLink, SiteHeader } from 'react-cheminfo/ui';
+import {
+  CiteButton,
+  EcosystemButton,
+  NavLink,
+  ShareButton,
+  SiteFooter,
+  SiteHeader,
+} from 'react-cheminfo/ui';
 
+import { ABOUT } from '../../about.ts';
 import { ROUTES } from '../../routes.ts';
 import { state } from '../../state/index.ts';
 import { navigate } from '../../state/router.ts';
@@ -28,59 +35,70 @@ const NAV = ROUTES.filter((route) => route.path !== ABOUT_PATH).map(
 const ABOUT_ITEM: NavItem = {
   id: ABOUT_PATH,
   label: 'About',
+  icon: 'info-sign',
   href: ABOUT_PATH,
   onSelect: () => navigate(ABOUT_PATH),
 };
 
+const DATA_ITEM: NavItem = {
+  id: 'data',
+  label: 'Data',
+  icon: 'database',
+  href: NOMAD_DATA_URL,
+  external: true,
+  title: 'Browse the dataset in NOMAD',
+};
+
 /**
  * The site chrome: brand at the left, the pages next to it, the utilities
- * pushed right. An embedded page renders no header at all — what a course
+ * pushed right. An embedded page renders no chrome at all — what a course
  * frames already carries its own navigation.
  * @param root0 - Component props.
  * @param root0.children - The routed page.
+ * @param root0.pageHasMain - True when the routed page renders its own main
+ * landmark, so the shell wraps it in a plain block instead. Defaults to false.
  */
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  pageHasMain = false,
+}: {
+  children: ReactNode;
+  pageHasMain?: boolean;
+}) {
   useSignals();
   const embedded = state.view.share.value.embed;
   const active = state.view.path.value;
+  const Content = pageHasMain ? 'div' : 'main';
 
-  if (embedded) return <div className="app-content">{children}</div>;
+  if (embedded) return <Content className="app-content">{children}</Content>;
 
   return (
     <>
-      <SiteHeader
-        siteId="polycarp"
-        nav={NAV}
-        activeId={active}
-        onHome={() => navigate('/')}
-        markSize={24}
-        actions={
-          <>
-            <NavLink item={ABOUT_ITEM} active={active === ABOUT_PATH} />
-            <a
-              className="nav-link"
-              href={NOMAD_DATA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icon icon="database" size={14} />
-              Data
-            </a>
-            <EcosystemButton currentSiteId="polycarp" />
-            <button
-              type="button"
-              className="nav-link"
-              title="Share a link to this page, or embed it in your own site"
-              onClick={() => (state.view.shareDialogOpen.value = true)}
-            >
-              <Icon icon="share" size={14} />
-              Share
-            </button>
-          </>
-        }
-      />
+      <div className="app-screen">
+        <SiteHeader
+          siteId="polycarp"
+          nav={NAV}
+          activeId={active}
+          onHome={() => navigate('/')}
+          markSize={24}
+          actions={
+            <>
+              <NavLink item={ABOUT_ITEM} active={active === ABOUT_PATH} />
+              <NavLink item={DATA_ITEM} />
+              <CiteButton works={ABOUT.cite ?? []} />
+              <EcosystemButton currentSiteId="polycarp" />
+              <ShareButton
+                onClick={() => {
+                  state.view.shareDialogOpen.value = true;
+                }}
+              />
+            </>
+          }
+        />
 
-      <div className="app-content">{children}</div>
+        <Content className="app-content">{children}</Content>
+      </div>
+      <SiteFooter siteId="polycarp" />
       <ShareDialog />
     </>
   );

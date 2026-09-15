@@ -1,4 +1,5 @@
 import type { AboutContent } from 'react-cheminfo/core';
+import { PLATFORM_WORK } from 'react-cheminfo/core';
 
 /**
  * What PolyCarp says about itself: the record the shared About page is drawn
@@ -20,6 +21,7 @@ export const ABOUT: AboutContent = {
     'The training set is ~3,800 copolymerisations extracted from ~1,200 publications, each recorded with its solvent, temperature and mechanism — the first dataset at this scale to carry conditions per entry. It is open: the Data link in the header opens it in NOMAD.',
   ],
   cite: [
+    PLATFORM_WORK,
     {
       what: 'Condition-aware prediction of copolymer architecture',
       reference: {

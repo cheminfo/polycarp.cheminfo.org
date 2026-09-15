@@ -21,14 +21,19 @@ const PAGES: Record<RoutePath, ComponentType> = {
   '/about': AboutPage,
 };
 
+// Swagger UI renders its own <main id="operations">, so the shell must not add a second one.
+const PAGES_WITH_OWN_MAIN: ReadonlySet<RoutePath> = new Set(['/api-docs']);
+
 /** Root component: starts the router and renders the routed page. */
 export function App() {
+  useSignals();
   useEffect(startRouter, []);
+  const pageHasMain = PAGES_WITH_OWN_MAIN.has(state.view.path.value);
 
   return (
     <>
       <SiteTheme siteId="polycarp" />
-      <AppShell>
+      <AppShell pageHasMain={pageHasMain}>
         <RoutedPage />
       </AppShell>
     </>

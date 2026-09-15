@@ -47,6 +47,18 @@ body {
   --bp-typography-color-primary-active: #8c1244;
 }
 
+/* The header and the page fill the screen, so the footer starts below the fold. */
+.app-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.app-screen > .app-content {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
 .app-content {
   max-width: var(--page-max);
   margin: 0 auto;
@@ -167,8 +179,32 @@ body {
 }
 
 @media (max-width: 900px) {
+  /* `1fr` alone lets a wide results panel stretch the column past the screen. */
   .main-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* A phone: one gutter rather than the page's padding plus each card's. Prose
+   pages keep 12px; the tool's cards reach nearly to the edge instead. */
+@media (max-width: 600px) {
+  .app-content {
+    padding: 12px;
+  }
+
+  .predict-layout {
+    margin-inline: -8px;
+  }
+
+  .settings-bar,
+  .prediction-card {
+    padding: 12px 8px;
+  }
+
+  .metrics-table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 
@@ -990,6 +1026,7 @@ body {
   font-size: 0.9rem;
   color: #404854;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .results-error {
@@ -1106,40 +1143,15 @@ body {
   margin: 12px 0;
 }
 
-.ind-toggle {
-  display: inline-flex;
-  border: 1px solid #d4dbe2;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.ind-toggle-btn {
-  border: none;
-  background: #fff;
-  padding: 6px 12px;
-  font-size: 0.84rem;
-  cursor: pointer;
-  color: #404854;
-}
-
-.ind-toggle-btn.active {
-  background: #0f2044;
-  color: #fff;
-}
-
-.ind-select,
 .ind-search {
+  flex: 1;
+  min-width: 180px;
   padding: 6px 10px;
   font-size: 0.84rem;
   border: 1px solid #d4dbe2;
   border-radius: 6px;
   background: #fff;
   color: #1a2733;
-}
-
-.ind-search {
-  flex: 1;
-  min-width: 180px;
 }
 
 .ind-table-wrap {

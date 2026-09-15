@@ -1,9 +1,5 @@
-import { ARCH_COLORS, cellBackground } from '../../archColors.ts';
+import { ARCH_COLORS, cellSwatch } from '../../archColors.ts';
 import type { OptimizePrediction } from '../../types.ts';
-
-function textColor(confidence: number): string {
-  return confidence >= 0.5 ? 'white' : '#1c2127';
-}
 
 interface Props {
   predictions: OptimizePrediction[];
@@ -72,18 +68,17 @@ export function OptimizationGrid({ predictions }: Props) {
                 {temperatures.map((t) => {
                   const pred = byTemp.get(t);
                   if (!pred) return <td key={t}>—</td>;
-                  const bg = cellBackground(
+                  const { background, foreground } = cellSwatch(
                     pred.predicted_class,
                     pred.confidence,
                   );
-                  const fg = textColor(pred.confidence);
                   return (
                     <td key={t} style={{ padding: '4px' }}>
                       <div
                         className={`optim-pred-cell${pred.solubility_issue ? ' solubility-issue' : ''}`}
                         style={{
-                          background: bg,
-                          color: fg,
+                          background,
+                          color: foreground,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',

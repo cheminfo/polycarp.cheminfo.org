@@ -1,11 +1,10 @@
 import { Button, HTMLSelect, Icon, InputGroup } from '@blueprintjs/core';
 import { useMemo, useState } from 'react';
+import { Structure } from 'react-cheminfo/structure';
 
 import { archColor } from '../../archColors.ts';
 import { DoiButton } from '../../components/shared/DoiButton.tsx';
 import type { NearestNeighbor } from '../../types.ts';
-
-import { MoleculeDisplay } from './MoleculeDisplay.tsx';
 
 interface Props {
   neighbors: NearestNeighbor[];
@@ -274,14 +273,14 @@ export function NearestResults({ neighbors }: Props) {
                         same monomers
                       </span>
                     )}
-                    <MoleculeDisplay
+                    <Structure
                       smiles={n.monomer1_smiles}
                       width={100}
                       height={75}
                     />
                   </td>
                   <td>
-                    <MoleculeDisplay
+                    <Structure
                       smiles={n.monomer2_smiles}
                       width={100}
                       height={75}

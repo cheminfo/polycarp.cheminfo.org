@@ -1,3 +1,6 @@
+import type { ColorScale, Swatch } from 'react-cheminfo/core';
+import { colorAt, evenScale, swatchAt } from 'react-cheminfo/core';
+
 /**
  * Hex colors for the three polymer architecture classes, indexed by the real
  * model class index (matches the backend `CLASS_LABELS` in
@@ -53,24 +56,51 @@ export function classColor(name: string, index?: number): string {
   return archColor(name);
 }
 
+/** The tint a cell carries when the classifier is least confident. */
+const NEUTRAL_TINT = '#f0f4f8';
+
+/** The two inks a heatmap cell is written in, whichever reads better. */
+const CELL_INK = { dark: '#1c2127', light: '#ffffff' };
+
 /**
- * Returns an RGB background colour for a heatmap cell.
+ * The ramp a heatmap cell is read on: the neutral tint at its low end, the
+ * class colour at its high end.
+ * @param classIndex - Zero-based class index (0 = alternating, 1 = random to block like, 2 = gradient).
+ * @returns The two-stop scale for that class.
+ */
+function cellScale(classIndex: number): ColorScale {
+  return evenScale([NEUTRAL_TINT, ARCH_COLORS[classIndex] ?? '#555555']);
+}
+
+/**
+ * Where a confidence sits on the cell ramp. The low end is never reached, so
+ * an unconfident cell still reads as its class rather than as blank paper.
+ * @param confidence - Classifier confidence in [0, 1].
+ * @returns A position on the scale, from 0.4 to 1.
+ */
+function cellPosition(confidence: number): number {
+  return 0.4 + confidence * 0.6;
+}
+
+/**
+ * Returns the background colour for a heatmap cell.
  * Interpolates from `#f0f4f8` (low confidence) toward the class colour (high).
  * @param classIndex - Zero-based class index (0 = alternating, 1 = random to block like, 2 = gradient).
  * @param confidence - Classifier confidence in [0, 1].
- * @returns CSS `rgb(...)` string.
+ * @returns A `#rrggbb` colour.
  */
 export function cellBackground(classIndex: number, confidence: number): string {
-  const hex = ARCH_COLORS[classIndex] ?? '#555555';
-  const r1 = 240;
-  const g1 = 244;
-  const b1 = 248;
-  const r2 = Number.parseInt(hex.slice(1, 3), 16);
-  const g2 = Number.parseInt(hex.slice(3, 5), 16);
-  const b2 = Number.parseInt(hex.slice(5, 7), 16);
-  const t = 0.4 + confidence * 0.6;
-  const r = Math.round(r1 + (r2 - r1) * t);
-  const g = Math.round(g1 + (g2 - g1) * t);
-  const b = Math.round(b1 + (b2 - b1) * t);
-  return `rgb(${r},${g},${b})`;
+  return colorAt(cellScale(classIndex), cellPosition(confidence));
+}
+
+/**
+ * Returns the background of a heatmap cell together with the ink that stays
+ * readable on it, which is decided by contrast against the colour that was
+ * actually mixed rather than by the confidence that produced it.
+ * @param classIndex - Zero-based class index (0 = alternating, 1 = random to block like, 2 = gradient).
+ * @param confidence - Classifier confidence in [0, 1].
+ * @returns The cell background and the ink to write the value in.
+ */
+export function cellSwatch(classIndex: number, confidence: number): Swatch {
+  return swatchAt(cellScale(classIndex), cellPosition(confidence), CELL_INK);
 }

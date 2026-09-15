@@ -1,32 +1,16 @@
 import { Button, PopoverNext } from '@blueprintjs/core';
 import { SvgLogoDoi } from 'cheminfo-font';
-import { useCallback, useState } from 'react';
+import { CopyButton } from 'react-cheminfo/ui';
 
 interface Props {
   doi: string;
   url: string;
 }
 
+/** How long the copy stays confirmed, in milliseconds. */
+const COPY_RESET_AFTER = 2000;
+
 function PopoverContent({ doi, url }: Props) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      // fallback for non-HTTPS or older browsers
-      const el = document.createElement('textarea');
-      el.value = url;
-      document.body.append(el);
-      el.select();
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      document.execCommand('copy');
-      el.remove();
-    }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [url]);
-
   return (
     <div style={{ padding: '10px 14px', maxWidth: 380, minWidth: 220 }}>
       <div
@@ -54,16 +38,14 @@ function PopoverContent({ doi, url }: Props) {
         {doi}
       </div>
       <div style={{ display: 'flex', gap: 6 }}>
-        <Button
-          size="small"
-          icon={copied ? 'tick' : 'duplicate'}
-          intent={copied ? 'success' : 'none'}
-          onClick={() => {
-            void handleCopy();
-          }}
-        >
-          {copied ? 'Copied!' : 'Copy link'}
-        </Button>
+        <CopyButton
+          small
+          content={url}
+          label="Copy link"
+          copiedLabel="Copied!"
+          resetAfter={COPY_RESET_AFTER}
+          title="Copy the DOI link"
+        />
         <Button
           size="small"
           variant="minimal"

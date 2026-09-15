@@ -1,4 +1,5 @@
 import type { RouteMeta } from 'react-cheminfo/core';
+import { pageMetaFor } from 'react-cheminfo/core';
 
 export const SITE_NAME = 'PolyCarp';
 export const SITE_URL = 'https://polycarp.cheminfo.org';
@@ -63,9 +64,7 @@ export type RoutePath = Route['path'];
 
 /** Resolves a URL path to a known route, falling back to the home page. */
 export function routeForPath(pathname: string): Route {
-  const normalized =
-    pathname.length > 1 && pathname.endsWith('/')
-      ? pathname.slice(0, -1)
-      : pathname;
-  return ROUTES.find((route) => route.path === normalized) ?? ROUTES[0];
+  // The answer is always one of the entries handed in, so it carries `label`
+  // and the literal path the rest of the app is typed against.
+  return pageMetaFor(ROUTES, pathname) as Route;
 }

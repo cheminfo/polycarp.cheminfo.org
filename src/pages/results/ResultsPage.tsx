@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { pluralize } from 'react-cheminfo/core';
+import type { CapsuleOption } from 'react-cheminfo/ui';
+import { CapsuleFilter } from 'react-cheminfo/ui';
 
 import { fetchPaperMetrics } from '../../api.ts';
 import { archColor } from '../../archColors.ts';
@@ -14,6 +17,14 @@ const PAGE_SIZE = 20;
 
 type SplitKey = 'train' | 'test';
 type RowFilter = 'all' | 'correct' | 'incorrect' | 'abstained';
+
+/** The outcomes a prediction row is narrowed to, each in its own colour. */
+const OUTCOME_OPTIONS: ReadonlyArray<CapsuleOption<RowFilter>> = [
+  { value: 'all', label: 'All predictions' },
+  { value: 'correct', label: 'Correct only', intent: 'success' },
+  { value: 'incorrect', label: 'Incorrect only', intent: 'danger' },
+  { value: 'abstained', label: 'Voting abstained', intent: 'warning' },
+];
 
 /**
  * Per-class table comparing plain XGBoost against the voting model.
@@ -255,35 +266,27 @@ function IndividualPredictions({
       </p>
 
       <div className="ind-controls">
-        <div className="ind-toggle">
-          {(['test', 'train'] as SplitKey[]).map((k) => (
-            <button
-              key={k}
-              type="button"
-              className={`ind-toggle-btn${splitKey === k ? ' active' : ''}`}
-              onClick={() => {
-                setSplitKey(k);
-                resetPage();
-              }}
-            >
-              {k === 'test' ? 'Test' : 'Train'} ({splits[k].n})
-            </button>
-          ))}
-        </div>
-        <select
-          className="ind-select"
-          aria-label="Filter predictions by outcome"
-          value={filter}
-          onChange={(e) => {
-            setFilter(e.target.value as RowFilter);
+        <CapsuleFilter
+          label="Split"
+          options={[
+            { value: 'test', label: 'Test', count: splits.test.n },
+            { value: 'train', label: 'Train', count: splits.train.n },
+          ]}
+          value={splitKey}
+          onChange={(next) => {
+            setSplitKey(next);
             resetPage();
           }}
-        >
-          <option value="all">All predictions</option>
-          <option value="correct">Correct only</option>
-          <option value="incorrect">Incorrect only</option>
-          <option value="abstained">Voting abstained</option>
-        </select>
+        />
+        <CapsuleFilter
+          label="Filter predictions by outcome"
+          options={OUTCOME_OPTIONS}
+          value={filter}
+          onChange={(next) => {
+            setFilter(next);
+            resetPage();
+          }}
+        />
         <input
           className="ind-search"
           type="search"
@@ -372,7 +375,7 @@ function IndividualPredictions({
           ‹ Prev
         </button>
         <span>
-          {filtered.length} reaction{filtered.length === 1 ? '' : 's'} · page{' '}
+          {filtered.length} {pluralize(filtered.length, 'reaction')} · page{' '}
           {safePage + 1} / {pageCount}
         </span>
         <button

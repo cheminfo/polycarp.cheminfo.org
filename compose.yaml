@@ -6,7 +6,16 @@ services:
   frontend:
     image: ${IMAGE_NAME:-ghcr.io/cheminfo/polycarp.cheminfo.org}:${IMAGE_TAG:-latest}
     build: .
-    env_file: .env
+    # What the server's deploy script probes before it keeps a new container.
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1:80/healthz']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    env_file:
+      - path: .env
+        required: false
     ports:
       - '${PORT:-10429}:80'
     init: true
@@ -36,8 +45,12 @@ services:
   backend:
     # Externally built ML/XTB image: its required capabilities and temp paths are
     # unknown, so cap_drop and read_only are deliberately omitted here.
+    # pin-ok: built by lamalab-org, and this site tracks their latest on
+    # purpose; BACKEND_IMAGE overrides it to pin a known-good digest.
     image: ${BACKEND_IMAGE:-ghcr.io/lamalab-org/copolymer-reactivity:latest}
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     init: true
     security_opt:
       - no-new-privileges:true

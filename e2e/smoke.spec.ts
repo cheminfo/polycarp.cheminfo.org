@@ -54,19 +54,23 @@ test('the header carries the mark, the wordmark and the four pages', async ({
   );
 });
 
-test('the utilities sit right: About, Data, Tools, Share', async ({ page }) => {
+test('the utilities sit right: About, Data, Cite, Tools, Share', async ({
+  page,
+}) => {
   await page.goto('/');
 
   const utilities = page.locator('.app-header-actions > *');
-  await expect(utilities).toHaveCount(4);
+  await expect(utilities).toHaveCount(5);
   await expect(utilities.nth(0)).toHaveAttribute('href', '/about');
   await expect(utilities.nth(0)).toHaveText('About');
   await expect(utilities.nth(1)).toHaveAttribute(
     'href',
     'https://nomad-lab.eu/prod/v1/gui/search/polymerization',
   );
-  await expect(utilities.nth(2)).toHaveClass(/ecosystem-button/);
-  await expect(utilities.nth(3)).toHaveText('Share');
+  await expect(utilities.nth(2)).toHaveClass(/citation-button/);
+  await expect(utilities.nth(2)).toHaveText('Cite');
+  await expect(utilities.nth(3)).toHaveClass(/ecosystem-button/);
+  await expect(utilities.nth(4)).toHaveText('Share');
 });
 
 test('a page link routes without a reload, and retitles the tab', async ({

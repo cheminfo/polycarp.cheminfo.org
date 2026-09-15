@@ -37,8 +37,9 @@ test('the context is the model and the dataset', () => {
 });
 
 test('it provides the publication citation', () => {
-  expect(ABOUT.cite).toHaveLength(1);
-  expect(ABOUT.cite?.[0]?.reference).toMatchObject({
+  expect(ABOUT.cite).toHaveLength(2);
+  expect(ABOUT.cite?.[0]?.reference.doi).toBe('10.2533/chimia.2025.66');
+  expect(ABOUT.cite?.[1]?.reference).toMatchObject({
     title: 'Condition-aware prediction of copolymer architecture',
     doi: '10.26434/chemrxiv.15004102/v2',
     publisher: 'ChemRxiv',
