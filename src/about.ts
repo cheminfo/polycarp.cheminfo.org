@@ -1,3 +1,4 @@
+import { BUILD_INFO } from 'react-cheminfo/build-info';
 import type { AboutContent } from 'react-cheminfo/core';
 import { PLATFORM_WORK } from 'react-cheminfo/core';
 
@@ -7,6 +8,9 @@ import { PLATFORM_WORK } from 'react-cheminfo/core';
  */
 export const ABOUT: AboutContent = {
   siteId: 'polycarp',
+  // Which release, built when, from which commit: the build says so,
+  // because a version written by hand is wrong by the next release.
+  build: BUILD_INFO,
   what: 'PolyCarp predicts whether a radical copolymerisation gives an alternating, random to block-like or gradient copolymer.',
   can: [
     'Draw two monomers, set solvent, temperature and mechanism, and predict the class.',

@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { cheminfoPrerender } from 'react-cheminfo/vite';
+import { cheminfoBuildInfo, cheminfoPrerender } from 'react-cheminfo/vite';
 import { defineConfig } from 'vite';
 
 import { ROUTES } from './src/routes.ts';
@@ -25,6 +25,7 @@ export default defineConfig({
   base: './',
   plugins: [
     react(),
+    cheminfoBuildInfo(),
     cheminfoPrerender({
       site: 'polycarp',
       routes: ROUTES,
