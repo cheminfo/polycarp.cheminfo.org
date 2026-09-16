@@ -5,6 +5,7 @@ import type { RoutePath } from '../routes.ts';
 import { ROUTES, routeForPath } from '../routes.ts';
 
 import { SHARE_VOCABULARY } from './shareConfig.ts';
+import { pathWithoutBase, withBase } from './site.ts';
 import { view } from './view.ts';
 
 /**
@@ -18,14 +19,20 @@ export function navigate(path: RoutePath): void {
     view.share.value,
     SHARE_VOCABULARY,
   );
-  globalThis.history.pushState(null, '', `${path}${query ? `?${query}` : ''}`);
+  globalThis.history.pushState(
+    null,
+    '',
+    `${withBase(path)}${query ? `?${query}` : ''}`,
+  );
   view.path.value = path;
 }
 
 /** Starts listening for back/forward, and titles the page on screen. */
 export function startRouter(): () => void {
   const onPopState = () => {
-    view.path.value = routeForPath(globalThis.location.pathname).path;
+    view.path.value = routeForPath(
+      pathWithoutBase(globalThis.location.pathname),
+    ).path;
   };
   globalThis.addEventListener('popstate', onPopState);
   const stopMeta = startDocumentMeta({

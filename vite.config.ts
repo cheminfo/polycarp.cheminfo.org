@@ -18,6 +18,11 @@ const hostPort = Number(process.env.PORT ?? 10429);
 const devServerPort = Number(process.env.VITE_PORT ?? hostPort + 1);
 
 export default defineConfig({
+  // The build carries no mount path. Every asset is written relative, so the
+  // one `dist` serves this site's own host and a path of a shared one without
+  // being rebuilt: the `<base>` the page carries is what resolves them, and the
+  // router reads its mount back off that.
+  base: './',
   plugins: [
     react(),
     cheminfoPrerender({
@@ -32,6 +37,10 @@ export default defineConfig({
       // link labels are the route titles, except where a title written for a
       // search result is too long to read as a menu entry (`short`).
       noscript: {
+        // The build bakes in no mount, so the crawl path is written against
+        // the `<base>` the page carries rather than the root of a host this
+        // deployment may only share.
+        hrefs: 'relative',
         heading: 'PolyCarp — copolymer microstructure prediction',
         intro:
           'PolyCarp predicts whether a radical copolymer is alternating, random to block-like or gradient, from its monomer pair, solvent and reaction conditions. It needs JavaScript to run.',

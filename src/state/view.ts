@@ -9,13 +9,14 @@ import type { RoutePath } from '../routes.ts';
 import { routeForPath } from '../routes.ts';
 
 import { SHARE_VOCABULARY } from './shareConfig.ts';
+import { pathWithoutBase } from './site.ts';
 
 export type ResultsPanel =
   'prediction' | 'optimization' | 'architecture' | 'lookup';
 
 function initialPath(): RoutePath {
   if (globalThis.location === undefined) return '/';
-  return routeForPath(globalThis.location.pathname).path;
+  return routeForPath(pathWithoutBase(globalThis.location.pathname)).path;
 }
 
 function initialShareConfig(): ShareConfig {
