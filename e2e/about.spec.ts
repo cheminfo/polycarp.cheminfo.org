@@ -72,8 +72,12 @@ test('the licence and the sources are named, and so is where to report', async (
 
   const licence = page.locator('.about-licence');
   await expect(licence.locator('h2')).toHaveText('Licence and source');
-  await expect(licence.locator('p')).toContainText('MIT, © cheminfo.');
-  await expect(licence.locator('a')).toHaveAttribute(
+  await expect(licence.locator('p').first()).toContainText('MIT, © cheminfo.');
+  await expect(
+    licence.getByRole('link', {
+      name: 'github.com/cheminfo/polycarp.cheminfo.org',
+    }),
+  ).toHaveAttribute(
     'href',
     'https://github.com/cheminfo/polycarp.cheminfo.org',
   );
