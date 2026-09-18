@@ -1,8 +1,18 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { expect, test } from '@playwright/test';
 
 // Every string below is quoted from src/about.ts, the ecosystem record and the
 // credits registry — the About page is what those become, so a page that drifts
 // from them has lost a credit or a licence without anybody noticing.
+
+/** The released version, which the build reads from the root `package.json`. */
+const VERSION = (
+  JSON.parse(
+    readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8'),
+  ) as { version: string }
+).version;
 
 test('About opens from the header and names the site', async ({ page }) => {
   await page.goto('/');
@@ -65,6 +75,18 @@ test('every borrowed work is credited with its licence', async ({ page }) => {
   );
 });
 
+test('the release is named and links to its tag', async ({ page }) => {
+  await page.goto('/about');
+
+  // The repository is public, so the release a visitor quotes is one click away.
+  const version = page.locator('.about-hero a.about-version');
+  await expect(version).toHaveText(VERSION);
+  await expect(version).toHaveAttribute(
+    'href',
+    `https://github.com/cheminfo/polycarp.cheminfo.org/releases/tag/v${VERSION}`,
+  );
+});
+
 test('the licence and the sources are named, and so is where to report', async ({
   page,
 }) => {
@@ -80,6 +102,11 @@ test('the licence and the sources are named, and so is where to report', async (
   ).toHaveAttribute(
     'href',
     'https://github.com/cheminfo/polycarp.cheminfo.org',
+  );
+  // The version sits in the hero; this section says when and from what.
+  await expect(licence.locator('p')).toHaveCount(2);
+  await expect(licence.locator('p').nth(1)).toHaveText(
+    /^Built \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC from commit [\da-f]{7}\.$/,
   );
 
   await expect(page.locator('.about-issues a')).toHaveAttribute(
