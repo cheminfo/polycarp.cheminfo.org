@@ -14,6 +14,11 @@ const VERSION = (
   ) as { version: string }
 ).version;
 
+/** What the hero badge reads: that release, and when the build was made. */
+const BUILD_BADGE = new RegExp(
+  String.raw`^${VERSION.replaceAll('.', String.raw`\.`)} · \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$`,
+);
+
 test('About opens from the header and names the site', async ({ page }) => {
   await page.goto('/');
 
@@ -80,7 +85,7 @@ test('the release is named and links to its tag', async ({ page }) => {
 
   // The repository is public, so the release a visitor quotes is one click away.
   const version = page.locator('.about-hero a.about-version');
-  await expect(version).toHaveText(VERSION);
+  await expect(version).toHaveText(BUILD_BADGE);
   await expect(version).toHaveAttribute(
     'href',
     `https://github.com/cheminfo/polycarp.cheminfo.org/releases/tag/v${VERSION}`,
