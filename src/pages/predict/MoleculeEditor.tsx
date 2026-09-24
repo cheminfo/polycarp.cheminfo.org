@@ -2,6 +2,7 @@ import { Button, Dialog, DialogBody, DialogFooter } from '@blueprintjs/core';
 import { useCallback, useRef, useState } from 'react';
 import type { StructureEditorChange } from 'react-cheminfo/structure';
 import { Structure, StructureEditor } from 'react-cheminfo/structure';
+import { ClickToCopy } from 'react-cheminfo/ui';
 
 import { TemplateDialog } from './TemplateDialog.tsx';
 import type { Template } from './data/monomers.ts';
@@ -83,6 +84,16 @@ export function MoleculeEditor({
           <div className="molecule-card-overlay">
             <span className="molecule-card-edit-hint">✏ Edit</span>
           </div>
+        </div>
+        <div className="molecule-card-smiles-row">
+          <ClickToCopy
+            as="code"
+            className="molecule-card-smiles"
+            value={smiles}
+            label={`${label} SMILES`}
+          >
+            {smiles}
+          </ClickToCopy>
         </div>
       </div>
 

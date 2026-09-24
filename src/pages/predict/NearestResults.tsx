@@ -1,6 +1,7 @@
 import { Button, HTMLSelect, Icon, InputGroup } from '@blueprintjs/core';
 import { useMemo, useState } from 'react';
 import { Structure } from 'react-cheminfo/structure';
+import { ClickToCopy } from 'react-cheminfo/ui';
 
 import { archColor } from '../../archColors.ts';
 import { DoiButton } from '../../components/shared/DoiButton.tsx';
@@ -273,18 +274,32 @@ export function NearestResults({ neighbors }: Props) {
                         same monomers
                       </span>
                     )}
-                    <Structure
-                      smiles={n.monomer1_smiles}
-                      width={100}
-                      height={75}
-                    />
+                    <ClickToCopy
+                      as="div"
+                      className="nearest-structure"
+                      value={n.monomer1_smiles}
+                      label="SMILES"
+                    >
+                      <Structure
+                        smiles={n.monomer1_smiles}
+                        width={100}
+                        height={75}
+                      />
+                    </ClickToCopy>
                   </td>
                   <td>
-                    <Structure
-                      smiles={n.monomer2_smiles}
-                      width={100}
-                      height={75}
-                    />
+                    <ClickToCopy
+                      as="div"
+                      className="nearest-structure"
+                      value={n.monomer2_smiles}
+                      label="SMILES"
+                    >
+                      <Structure
+                        smiles={n.monomer2_smiles}
+                        width={100}
+                        height={75}
+                      />
+                    </ClickToCopy>
                   </td>
                   <td>{n.solvent_name}</td>
                   <td>{n.temperature}</td>

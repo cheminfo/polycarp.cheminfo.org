@@ -1,3 +1,5 @@
+import { ClickToCopy } from 'react-cheminfo/ui';
+
 import { archColor } from '../../archColors.ts';
 import { DoiButton } from '../../components/shared/DoiButton.tsx';
 import type { ArchitectureSwitchResponse } from '../../types.ts';
@@ -51,7 +53,12 @@ export function ArchitectureSwitch({ data }: Props) {
               className="arch-counterfactual"
               style={{ borderLeftColor: color }}
             >
-              <div className="arch-cf-header">
+              <ClickToCopy
+                as="div"
+                className="arch-cf-header"
+                value={`${cf.predicted_class_name} in ${cf.solvent_name} at ${cf.temperature}°C`}
+                label="condition"
+              >
                 <span
                   className="arch-badge"
                   style={{
@@ -64,17 +71,38 @@ export function ArchitectureSwitch({ data }: Props) {
                 </span>
                 in <strong>{cf.solvent_name}</strong> at{' '}
                 <strong>{cf.temperature}°C</strong>
-              </div>
+              </ClickToCopy>
               <div className="arch-cf-details">
                 <div className="arch-cf-detail">
-                  ΔlogP: <strong>{fmt(cf.delta_logp, true)}</strong>
+                  ΔlogP:{' '}
+                  <strong>
+                    <ClickToCopy value={fmt(cf.delta_logp, true)} label="ΔlogP">
+                      {fmt(cf.delta_logp, true)}
+                    </ClickToCopy>
+                  </strong>
                 </div>
                 <div className="arch-cf-detail">
-                  ΔT: <strong>{fmt(cf.delta_temperature, true)}°C</strong>
+                  ΔT:{' '}
+                  <strong>
+                    <ClickToCopy
+                      value={fmt(cf.delta_temperature, true)}
+                      label="ΔT"
+                    >
+                      {fmt(cf.delta_temperature, true)}
+                    </ClickToCopy>
+                    °C
+                  </strong>
                 </div>
                 <div className="arch-cf-detail">
                   Confidence:{' '}
-                  <strong>{(cf.confidence * 100).toFixed(1)}%</strong>
+                  <strong>
+                    <ClickToCopy
+                      value={`${(cf.confidence * 100).toFixed(1)}%`}
+                      label="confidence"
+                    >
+                      {(cf.confidence * 100).toFixed(1)}%
+                    </ClickToCopy>
+                  </strong>
                 </div>
                 {cf.reference && (
                   <div

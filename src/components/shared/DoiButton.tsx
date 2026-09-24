@@ -1,6 +1,6 @@
 import { Button, PopoverNext } from '@blueprintjs/core';
 import { SvgLogoDoi } from 'cheminfo-font';
-import { CopyButton } from 'react-cheminfo/ui';
+import { ClickToCopy, CopyButton } from 'react-cheminfo/ui';
 
 interface Props {
   doi: string;
@@ -25,7 +25,11 @@ function PopoverContent({ doi, url }: Props) {
       >
         DOI
       </div>
-      <div
+      <ClickToCopy
+        as="div"
+        className="doi-value"
+        value={doi}
+        label="DOI"
         style={{
           fontFamily: 'monospace',
           fontSize: 12,
@@ -36,7 +40,7 @@ function PopoverContent({ doi, url }: Props) {
         }}
       >
         {doi}
-      </div>
+      </ClickToCopy>
       <div style={{ display: 'flex', gap: 6 }}>
         <CopyButton
           small

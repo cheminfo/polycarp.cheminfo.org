@@ -1,3 +1,5 @@
+import { ClickToCopy } from 'react-cheminfo/ui';
+
 import { archColor, classColor } from '../../archColors.ts';
 import type { PredictResponse } from '../../types.ts';
 
@@ -36,6 +38,7 @@ export function PredictionCard({
     ([, a], [, b]) => b - a,
   );
   const mainColor = classColor(predictedClassName, predictedClass);
+  const confidenceText = `${(confidence * 100).toFixed(1)}%`;
 
   return (
     <div className="prediction-card">
@@ -44,12 +47,14 @@ export function PredictionCard({
 
       <div className="predicted-class-row">
         <span className="predicted-class-label">Predicted class:</span>
-        <span
+        <ClickToCopy
           className="predicted-class-name"
           style={{ background: mainColor }}
+          value={predictedClassName}
+          label="predicted class"
         >
           {predictedClassName}
-        </span>
+        </ClickToCopy>
         {solubilityIssue && (
           <span className="solubility-warning">⚠ Solubility issue</span>
         )}
@@ -83,9 +88,13 @@ export function PredictionCard({
 
       <div className="confidence-row">
         <span className="confidence-label">Confidence:</span>
-        <span className="confidence-value">
-          {(confidence * 100).toFixed(1)}%
-        </span>
+        <ClickToCopy
+          className="confidence-value"
+          value={confidenceText}
+          label="confidence"
+        >
+          {confidenceText}
+        </ClickToCopy>
         <div className="confidence-bar-wrap">
           <div
             className="confidence-bar"
@@ -102,6 +111,7 @@ export function PredictionCard({
             const color = classColor(name);
             const isPredicted =
               name.toLowerCase() === predictedClassName.toLowerCase();
+            const probabilityText = `${(prob * 100).toFixed(2)}%`;
             return (
               <tr key={name} className={isPredicted ? 'predicted' : ''}>
                 <td>
@@ -116,9 +126,14 @@ export function PredictionCard({
                     />
                   </div>
                 </td>
-                <td style={{ textAlign: 'right', minWidth: 46 }}>
-                  {(prob * 100).toFixed(2)}%
-                </td>
+                <ClickToCopy
+                  as="td"
+                  style={{ textAlign: 'right', minWidth: 46 }}
+                  value={probabilityText}
+                  label={`${name} probability`}
+                >
+                  {probabilityText}
+                </ClickToCopy>
               </tr>
             );
           })}

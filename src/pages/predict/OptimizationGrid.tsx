@@ -1,3 +1,5 @@
+import { ClickToCopy } from 'react-cheminfo/ui';
+
 import { ARCH_COLORS, cellSwatch } from '../../archColors.ts';
 import type { OptimizePrediction } from '../../types.ts';
 
@@ -16,7 +18,11 @@ export function OptimizationGrid({ predictions }: Props) {
   // Build pivot: solvent → temperature → prediction
   const solventMap = new Map<
     string,
-    { logp: number; byTemp: Map<number, OptimizePrediction> }
+    {
+      logp: number;
+      smiles: string | undefined;
+      byTemp: Map<number, OptimizePrediction>;
+    }
   >();
   const tempSet = new Set<number>();
 
@@ -25,6 +31,7 @@ export function OptimizationGrid({ predictions }: Props) {
     if (!solventMap.has(p.solvent_name)) {
       solventMap.set(p.solvent_name, {
         logp: p.solvent_logp,
+        smiles: p.solvent_smiles,
         byTemp: new Map(),
       });
     }
@@ -57,12 +64,22 @@ export function OptimizationGrid({ predictions }: Props) {
             </tr>
           </thead>
           <tbody>
-            {solvents.map(([solventName, { logp, byTemp }]) => (
+            {solvents.map(([solventName, { logp, smiles, byTemp }]) => (
               <tr key={solventName}>
                 <td className="optim-solvent-cell">
-                  <div className="optim-solvent-name">{solventName}</div>
+                  <ClickToCopy
+                    as="div"
+                    className="optim-solvent-name"
+                    value={smiles ?? solventName}
+                    label={smiles === undefined ? 'solvent' : 'solvent SMILES'}
+                  >
+                    {solventName}
+                  </ClickToCopy>
                   <div className="optim-solvent-logp">
-                    logP {logp.toFixed(2)}
+                    logP{' '}
+                    <ClickToCopy value={logp.toFixed(2)} label="logP">
+                      {logp.toFixed(2)}
+                    </ClickToCopy>
                   </div>
                 </td>
                 {temperatures.map((t) => {
@@ -72,9 +89,11 @@ export function OptimizationGrid({ predictions }: Props) {
                     pred.predicted_class,
                     pred.confidence,
                   );
+                  const confidenceText = `${(pred.confidence * 100).toFixed(1)}%`;
                   return (
                     <td key={t} style={{ padding: '4px' }}>
-                      <div
+                      <ClickToCopy
+                        as="div"
                         className={`optim-pred-cell${pred.solubility_issue ? ' solubility-issue' : ''}`}
                         style={{
                           background,
@@ -87,10 +106,11 @@ export function OptimizationGrid({ predictions }: Props) {
                           fontWeight: 700,
                           fontSize: '0.85rem',
                         }}
-                        title={`${pred.predicted_class_name} — ${(pred.confidence * 100).toFixed(1)}% confidence`}
+                        value={confidenceText}
+                        label={`${pred.predicted_class_name} confidence`}
                       >
-                        {(pred.confidence * 100).toFixed(1)}%
-                      </div>
+                        {confidenceText}
+                      </ClickToCopy>
                     </td>
                   );
                 })}

@@ -1,7 +1,7 @@
 /** Step-by-step user guide for the PolyCarp prediction interface. */
 export function GuidePage() {
   return (
-    <div className="about-content guide-content">
+    <div className="about-content guide-content text-selectable">
       <h2>Quick start</h2>
       <p>
         Three steps to get your first prediction: (1) draw or load your two
@@ -20,8 +20,8 @@ export function GuidePage() {
               Each monomer card shows a structure editor. Draw the molecule
               directly in the canvas or click <strong>Load template</strong> to
               pick from a library of common vinyl monomers (styrene, MMA,
-              acrylates, acrylamides, and more). The SMILES string updates live
-              and can be pasted directly.
+              acrylates, acrylamides, and more). The SMILES string under the
+              card updates live — click it to copy it.
             </p>
             <ul>
               <li>

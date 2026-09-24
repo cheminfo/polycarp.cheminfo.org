@@ -22,8 +22,10 @@
   box-sizing: border-box;
 }
 
-*:focus,
-*:focus-visible {
+/* A copyable value keeps the family's focus ring: it is the only thing that
+   tells a keyboard user which value Enter will copy. */
+*:focus:not(.click-to-copy),
+*:focus-visible:not(.click-to-copy) {
   outline: none !important;
 }
 
@@ -280,6 +282,23 @@ body {
   opacity: 1;
 }
 
+/* The drawing is a button that opens the editor, so the SMILES it stands for
+   gets a line of its own, which is the copyable one. */
+.molecule-card-smiles-row {
+  display: flex;
+  justify-content: center;
+  padding: 0 24px 8px;
+  border-top: 1px solid #f0f4f8;
+  padding-top: 6px;
+}
+
+.molecule-card-smiles {
+  font-size: 0.72rem;
+  color: #5c6570;
+  word-break: break-all;
+  text-align: center;
+}
+
 /* ── Params + results column ───────────────────────────────── */
 
 .center-col {
@@ -441,6 +460,14 @@ body {
   font-size: 0.85rem;
 }
 
+/* The site's own cell padding is more specific than the library's block rule,
+   so a copyable cell repeats the room its glyph needs. */
+.class-probs-table td.click-to-copy,
+.metrics-table td.click-to-copy,
+.ind-table td.click-to-copy {
+  padding-right: 22px;
+}
+
 .class-dot {
   display: inline-block;
   width: 10px;
@@ -530,8 +557,20 @@ body {
   color: white;
   min-width: 60px;
   height: 40px;
-  cursor: default;
   position: relative;
+}
+
+/* The cell is painted with the class colour, so the glyph follows the ink the
+   cell already chose for contrast rather than the page's muted grey. */
+.optim-pred-cell .click-to-copy__icon {
+  color: inherit;
+}
+
+/* The grid is centred, so the room a copyable value keeps for its glyph is
+   mirrored on the left and the value stays where it was drawn. */
+.optim-pred-cell.click-to-copy,
+.optim-solvent-name.click-to-copy {
+  padding-left: 22px;
 }
 
 .optim-pred-cell.solubility-issue::after {
@@ -1066,6 +1105,11 @@ body {
   border-top: 2px solid #e8ecf0;
 }
 
+.metrics-actions {
+  display: flex;
+  margin: -8px 0 16px;
+}
+
 .metrics-swatch {
   display: inline-block;
   width: 9px;
@@ -1251,7 +1295,6 @@ body {
 
 .nearest-th-sort {
   cursor: pointer;
-  user-select: none;
 }
 
 .nearest-th-sort:hover {

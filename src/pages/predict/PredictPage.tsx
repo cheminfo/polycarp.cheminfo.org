@@ -8,6 +8,7 @@ import {
   Tabs,
 } from '@blueprintjs/core';
 import { useSignals } from '@preact/signals-react/runtime';
+import { ClickToCopy } from 'react-cheminfo/ui';
 
 import type { ResultsPanel } from '../../state/index.ts';
 import { isHidden, predict, state } from '../../state/index.ts';
@@ -172,7 +173,14 @@ export function PredictPage() {
         </div>
       </div>
 
-      {error.value && <div className="error-banner">⚠ {error.value}</div>}
+      {error.value && (
+        <div className="error-banner">
+          ⚠{' '}
+          <ClickToCopy value={error.value} label="error message">
+            {error.value}
+          </ClickToCopy>
+        </div>
+      )}
 
       <div className="main-row">
         <div className="editors-col">

@@ -7,7 +7,7 @@ import 'swagger-ui-react/swagger-ui.css';
  */
 export function ApiDocsPage() {
   return (
-    <div className="api-docs-tab">
+    <div className="api-docs-tab text-selectable">
       <SwaggerUI url="/api/openapi.json" />
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { pluralize } from 'react-cheminfo/core';
 import type { CapsuleOption } from 'react-cheminfo/ui';
-import { CapsuleFilter } from 'react-cheminfo/ui';
+import { CapsuleFilter, ClickToCopy, CopyButton } from 'react-cheminfo/ui';
 
 import { fetchPaperMetrics } from '../../api.ts';
 import { archColor } from '../../archColors.ts';
@@ -12,8 +12,12 @@ import type {
   SplitMetrics,
 } from '../../types.ts';
 
-const ROW_ORDER = ['Alternating', 'Random', 'Gradient', 'Macro'];
+import { ROW_ORDER, metricsToTsv } from './metrics.ts';
+
 const PAGE_SIZE = 20;
+
+/** The script that recomputes the numbers this page shows. */
+const REPRODUCE_SCRIPT = 'copol_prediction/reproduce_paper_metrics.py';
 
 type SplitKey = 'train' | 'test';
 type RowFilter = 'all' | 'correct' | 'incorrect' | 'abstained';
@@ -25,6 +29,20 @@ const OUTCOME_OPTIONS: ReadonlyArray<CapsuleOption<RowFilter>> = [
   { value: 'incorrect', label: 'Incorrect only', intent: 'danger' },
   { value: 'abstained', label: 'Voting abstained', intent: 'warning' },
 ];
+
+/**
+ * One metric of the per-class table, copied by a click on its cell.
+ * @param root0
+ * @param root0.value - The metric, written with three decimals.
+ * @param root0.label - What the metric is, named in the hover title.
+ */
+function MetricCell({ value, label }: { value: number; label: string }) {
+  return (
+    <ClickToCopy as="td" value={value.toFixed(3)} label={label}>
+      {value.toFixed(3)}
+    </ClickToCopy>
+  );
+}
 
 /**
  * Per-class table comparing plain XGBoost against the voting model.
@@ -66,12 +84,12 @@ function MetricsTable({ split }: { split: SplitMetrics }) {
                 )}
                 {cls}
               </td>
-              <td>{x.acc.toFixed(3)}</td>
-              <td>{x.prec.toFixed(3)}</td>
-              <td>{x.f1.toFixed(3)}</td>
-              <td>{v.acc.toFixed(3)}</td>
-              <td>{v.prec.toFixed(3)}</td>
-              <td>{v.f1.toFixed(3)}</td>
+              <MetricCell value={x.acc} label={`${cls} XGBoost accuracy`} />
+              <MetricCell value={x.prec} label={`${cls} XGBoost precision`} />
+              <MetricCell value={x.f1} label={`${cls} XGBoost F1`} />
+              <MetricCell value={v.acc} label={`${cls} voting accuracy`} />
+              <MetricCell value={v.prec} label={`${cls} voting precision`} />
+              <MetricCell value={v.f1} label={`${cls} voting F1`} />
             </tr>
           );
         })}
@@ -165,6 +183,9 @@ function SplitSection({
 }) {
   const xgb: ModelMetrics = split.xgboost;
   const vote: ModelMetrics = split.voting;
+  const accuracy = `${((xgb.accuracy ?? 0) * 100).toFixed(1)}%`;
+  const coverage = `${((vote.coverage ?? 0) * 100).toFixed(0)}%`;
+  const macroF1 = (vote.per_class.Macro?.f1 ?? 0).toFixed(3);
   return (
     <section className="results-split">
       <h3>
@@ -173,13 +194,35 @@ function SplitSection({
       </h3>
       <p className="results-headline">
         Plain XGBoost accuracy{' '}
-        <strong>{((xgb.accuracy ?? 0) * 100).toFixed(1)}%</strong> · voting
-        model retains{' '}
-        <strong>{((vote.coverage ?? 0) * 100).toFixed(0)}%</strong> of samples (
-        {vote.retained}/{split.n}) at macro-F1{' '}
-        <strong>{(vote.per_class.Macro?.f1 ?? 0).toFixed(3)}</strong>.
+        <strong>
+          <ClickToCopy value={accuracy} label="accuracy">
+            {accuracy}
+          </ClickToCopy>
+        </strong>{' '}
+        · voting model retains{' '}
+        <strong>
+          <ClickToCopy value={coverage} label="coverage">
+            {coverage}
+          </ClickToCopy>
+        </strong>{' '}
+        of samples ({vote.retained}/{split.n}) at macro-F1{' '}
+        <strong>
+          <ClickToCopy value={macroF1} label="macro-F1">
+            {macroF1}
+          </ClickToCopy>
+        </strong>
+        .
       </p>
       <MetricsTable split={split} />
+      <div className="metrics-actions">
+        <CopyButton
+          small
+          minimal
+          label="Copy table"
+          content={() => metricsToTsv(split)}
+          title="Copy the per-class table as tab-separated values"
+        />
+      </div>
       <div className="confusion-row">
         <ConfusionMatrix
           title="Plain XGBoost"
@@ -321,9 +364,24 @@ function IndividualPredictions({
                 key={`${splitKey}-${sourceIndex}`}
                 className={r.correct ? undefined : 'ind-row-wrong'}
               >
-                <td title={r.monomer1_smiles}>{r.monomer1_name ?? '—'}</td>
-                <td title={r.monomer2_smiles}>{r.monomer2_name ?? '—'}</td>
-                <td>{r.solvent_name ?? '—'}</td>
+                <ClickToCopy as="td" value={r.monomer1_smiles} label="SMILES">
+                  {r.monomer1_name ?? '—'}
+                </ClickToCopy>
+                <ClickToCopy as="td" value={r.monomer2_smiles} label="SMILES">
+                  {r.monomer2_name ?? '—'}
+                </ClickToCopy>
+                <ClickToCopy
+                  as="td"
+                  value={r.solvent_smiles ?? r.solvent_name ?? ''}
+                  label={
+                    r.solvent_smiles === null ? 'solvent' : 'solvent SMILES'
+                  }
+                  disabled={
+                    r.solvent_smiles === null && r.solvent_name === null
+                  }
+                >
+                  {r.solvent_name ?? '—'}
+                </ClickToCopy>
                 <td>{r.temperature ?? '—'}</td>
                 <td>
                   <ClassPill name={r.true_class_name} />
@@ -417,7 +475,12 @@ export function ResultsPage() {
     return (
       <div className="results-tab about-content">
         <h2>Model performance</h2>
-        <p className="results-error">Could not load results: {error}</p>
+        <p className="results-error">
+          Could not load results:{' '}
+          <ClickToCopy value={error} label="error message">
+            {error}
+          </ClickToCopy>
+        </p>
       </div>
     );
   }
@@ -461,9 +524,11 @@ export function ResultsPage() {
       <p className="results-verify">
         These numbers are cached on the server — precomputed from the released
         model bundle and committed data splits by{' '}
-        <code>copol_prediction/reproduce_paper_metrics.py</code>, served via{' '}
-        <code>GET /paper_metrics</code>, not recomputed in the browser. To
-        verify them, run that script (see{' '}
+        <ClickToCopy as="code" value={REPRODUCE_SCRIPT} label="script path">
+          {REPRODUCE_SCRIPT}
+        </ClickToCopy>
+        , served via <code>GET /paper_metrics</code>, not recomputed in the
+        browser. To verify them, run that script (see{' '}
         <a
           href="https://github.com/lamalab-org/copolymer-reactivity/blob/main/copol_prediction/REPRODUCE.md"
           target="_blank"
