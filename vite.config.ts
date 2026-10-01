@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react';
 import { cheminfoBuildInfo, cheminfoPrerender } from 'react-cheminfo/vite';
 import { defineConfig } from 'vite';
 
+import { pageContent } from './src/content.ts';
 import { ROUTES } from './src/routes.ts';
 
 // Where the dev server forwards `/api` requests. Defaults to the live
@@ -29,6 +30,9 @@ export default defineConfig({
     cheminfoPrerender({
       site: 'polycarp',
       routes: ROUTES,
+      // What each address says for itself: without it every address ships the
+      // same body, this site's menu, and a search engine folds them into one.
+      content: pageContent,
       // The prediction API is an endpoint, not a page.
       robots: ['/api/'],
       category: 'ScienceApplication',
@@ -45,6 +49,9 @@ export default defineConfig({
         heading: 'PolyCarp — copolymer microstructure prediction',
         intro:
           'PolyCarp predicts whether a radical copolymer is alternating, random to block-like or gradient, from its monomer pair, solvent and reaction conditions. It needs JavaScript to run.',
+        // A crawler that runs no script has no other path from one of our
+        // tools to the next, so a site that lists none leaves it with none.
+        ecosystem: { taglines: false },
       },
     }),
   ],
