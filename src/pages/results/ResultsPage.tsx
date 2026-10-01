@@ -1,7 +1,12 @@
+import { Button } from '@blueprintjs/core';
 import { useEffect, useMemo, useState } from 'react';
 import { pluralize } from 'react-cheminfo/core';
 import type { CapsuleOption } from 'react-cheminfo/ui';
-import { CapsuleFilter, ClickToCopy, TableDataButton } from 'react-cheminfo/ui';
+import {
+  CapsuleFilter,
+  ClickToCopy,
+  DelimitedTextDialog,
+} from 'react-cheminfo/ui';
 
 import { fetchPaperMetrics } from '../../api.ts';
 import { archColor } from '../../archColors.ts';
@@ -181,6 +186,7 @@ function SplitSection({
   split: SplitMetrics;
   classes: string[];
 }) {
+  const [isTableOpen, setIsTableOpen] = useState(false);
   const xgb: ModelMetrics = split.xgboost;
   const vote: ModelMetrics = split.voting;
   const accuracy = `${((xgb.accuracy ?? 0) * 100).toFixed(1)}%`;
@@ -215,10 +221,19 @@ function SplitSection({
       </p>
       <MetricsTable split={split} />
       <div className="metrics-actions">
-        <TableDataButton
+        <Button
           small
           text="Copy or download"
-          rows={() => metricsRows(split)}
+          onClick={() => {
+            setIsTableOpen(true);
+          }}
+        />
+        <DelimitedTextDialog
+          isOpen={isTableOpen}
+          onClose={() => {
+            setIsTableOpen(false);
+          }}
+          rows={metricsRows(split)}
           header={METRICS_HEADER}
           fileName="per-class-metrics"
           title="The per-class metrics"
