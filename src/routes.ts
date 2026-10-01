@@ -55,7 +55,7 @@ export const ROUTES = [
     label: 'About',
     title: 'About',
     description:
-      'PolyCarp predicts copolymer microstructure from XTB descriptors and a curated reactivity-ratio dataset. Method, data sources, citation and licence.',
+      'PolyCarp predicts copolymer microstructure from XTB descriptors and a curated reactivity-ratio dataset. Its method, its data sources, and how to cite it.',
   },
 ] as const satisfies readonly RouteDefinition[];
 
