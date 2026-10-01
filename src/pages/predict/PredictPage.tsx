@@ -2,13 +2,12 @@ import {
   Button,
   FormGroup,
   HTMLSelect,
-  NumericInput,
   Spinner,
   Tab,
   Tabs,
 } from '@blueprintjs/core';
 import { useSignals } from '@preact/signals-react/runtime';
-import { ClickToCopy } from 'react-cheminfo/ui';
+import { ClickToCopy, NumberInput } from 'react-cheminfo/ui';
 
 import type { ResultsPanel } from '../../state/index.ts';
 import { isHidden, predict, state } from '../../state/index.ts';
@@ -93,14 +92,13 @@ export function PredictPage() {
           <h4>Polymerisation</h4>
           <div className="settings-bar-fields">
             <FormGroup label="Temperature (°C)" labelFor="temperature">
-              <NumericInput
+              <NumberInput
                 id="temperature"
                 value={reaction.temperature.value}
-                onValueChange={(value) => (reaction.temperature.value = value)}
+                onChange={(value) => (reaction.temperature.value = value)}
                 min={0}
                 max={300}
-                stepSize={5}
-                minorStepSize={1}
+                step={5}
                 fill
               />
             </FormGroup>

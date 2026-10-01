@@ -1,4 +1,5 @@
 /* eslint-disable camelcase -- the metrics shape is the Python API's. */
+import { toDelimited } from 'react-cheminfo/core';
 import { expect, test } from 'vitest';
 
 import type {
@@ -6,7 +7,7 @@ import type {
   ModelMetrics,
   SplitMetrics,
 } from '../../../types.ts';
-import { metricsToTsv } from '../metrics.ts';
+import { METRICS_HEADER, metricsRows } from '../metrics.ts';
 
 const ALTERNATING: ClassMetrics = { acc: 0.8, prec: 0.8, f1: 0.8 };
 const RANDOM: ClassMetrics = { acc: 0.8, prec: 0.73, f1: 0.76 };
@@ -41,8 +42,17 @@ function split(
   };
 }
 
+/**
+ * The cells as the one string the assertions below are written against.
+ * @param split - The split whose two models are compared.
+ * @returns The header line, then one line per class.
+ */
+function asTsv(split: Parameters<typeof metricsRows>[0]): string {
+  return toDelimited(metricsRows(split), { header: METRICS_HEADER });
+}
+
 test('the table is written in the page order, the macro average last', () => {
-  const tsv = metricsToTsv(
+  const tsv = asTsv(
     split(
       {
         Gradient: GRADIENT,
@@ -71,7 +81,7 @@ test('the table is written in the page order, the macro average last', () => {
 });
 
 test('a class only one model reports is left out, as the table leaves it out', () => {
-  const tsv = metricsToTsv(
+  const tsv = asTsv(
     split(
       { Alternating: ALTERNATING, Gradient: GRADIENT, Macro: MACRO },
       { Alternating: ALTERNATING, Macro: MACRO },

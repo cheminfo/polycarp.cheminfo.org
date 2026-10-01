@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { pluralize } from 'react-cheminfo/core';
 import type { CapsuleOption } from 'react-cheminfo/ui';
-import { CapsuleFilter, ClickToCopy, CopyButton } from 'react-cheminfo/ui';
+import { CapsuleFilter, ClickToCopy, TableDataButton } from 'react-cheminfo/ui';
 
 import { fetchPaperMetrics } from '../../api.ts';
 import { archColor } from '../../archColors.ts';
@@ -12,7 +12,7 @@ import type {
   SplitMetrics,
 } from '../../types.ts';
 
-import { ROW_ORDER, metricsToTsv } from './metrics.ts';
+import { METRICS_HEADER, ROW_ORDER, metricsRows } from './metrics.ts';
 
 const PAGE_SIZE = 20;
 
@@ -215,12 +215,14 @@ function SplitSection({
       </p>
       <MetricsTable split={split} />
       <div className="metrics-actions">
-        <CopyButton
+        <TableDataButton
           small
-          minimal
-          label="Copy table"
-          content={() => metricsToTsv(split)}
-          title="Copy the per-class table as tab-separated values"
+          text="Copy or download"
+          rows={() => metricsRows(split)}
+          header={METRICS_HEADER}
+          fileName="per-class-metrics"
+          title="The per-class metrics"
+          description="One line per class both models report, in the order the table reads, with the same three decimals."
         />
       </div>
       <div className="confusion-row">

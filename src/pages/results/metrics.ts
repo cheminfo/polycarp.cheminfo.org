@@ -1,12 +1,10 @@
-import { toDelimited } from 'react-cheminfo/core';
-
 import type { SplitMetrics } from '../../types.ts';
 
 /** The order the per-class table reads in, the macro average last. */
 export const ROW_ORDER = ['Alternating', 'Random', 'Gradient', 'Macro'];
 
 /** The columns of the per-class table, in the order they are shown. */
-const HEADER = [
+export const METRICS_HEADER = [
   'Class',
   'XGBoost Acc',
   'XGBoost Prec',
@@ -17,12 +15,12 @@ const HEADER = [
 ];
 
 /**
- * The per-class metrics table as tab-separated text, ready to paste into a
- * sheet: the same rows, in the same order, with the same three decimals.
+ * The per-class metrics table as cells, ready to be handed over: the same rows,
+ * in the same order, with the same three decimals.
  * @param split - The split whose two models are compared.
- * @returns The header line and one line per class both models report.
+ * @returns One line of cells per class both models report.
  */
-export function metricsToTsv(split: SplitMetrics): string {
+export function metricsRows(split: SplitMetrics): string[][] {
   const rows: string[][] = [];
   for (const cls of ROW_ORDER) {
     const xgboost = split.xgboost.per_class[cls];
@@ -38,5 +36,5 @@ export function metricsToTsv(split: SplitMetrics): string {
       voting.f1.toFixed(3),
     ]);
   }
-  return toDelimited(rows, { header: HEADER });
+  return rows;
 }
