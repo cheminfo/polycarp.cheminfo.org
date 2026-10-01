@@ -80,44 +80,27 @@ test('every borrowed work is credited with its licence', async ({ page }) => {
   );
 });
 
-test('the release is named and links to its tag', async ({ page }) => {
+test('the release is named, and links nowhere', async ({ page }) => {
   await page.goto('/about');
 
-  // The repository is public, so the release a visitor quotes is one click away.
-  const version = page.locator('.about-hero a.about-version');
-  await expect(version).toHaveText(BUILD_BADGE);
-  await expect(version).toHaveAttribute(
-    'href',
-    `https://github.com/cheminfo/polycarp.cheminfo.org/releases/tag/v${VERSION}`,
+  await expect(page.locator('.about-hero .about-version')).toHaveText(
+    BUILD_BADGE,
   );
+  await expect(page.locator('a.about-version')).toHaveCount(0);
 });
 
-test('the licence and the sources are named, and so is where to report', async ({
+test('the build is the last thing the page says, and there is no licence', async ({
   page,
 }) => {
   await page.goto('/about');
 
-  const licence = page.locator('.about-licence');
-  await expect(licence.locator('h2')).toHaveText('Licence and source');
-  await expect(licence.locator('p').first()).toContainText('MIT, © cheminfo.');
-  await expect(
-    licence.getByRole('link', {
-      name: 'github.com/cheminfo/polycarp.cheminfo.org',
-    }),
-  ).toHaveAttribute(
-    'href',
-    'https://github.com/cheminfo/polycarp.cheminfo.org',
-  );
-  // The version sits in the hero; this section says when and from what.
-  await expect(licence.locator('p')).toHaveCount(2);
-  await expect(licence.locator('p').nth(1)).toHaveText(
+  // The version sits in the hero; this line says when and from what.
+  await expect(page.locator('.about-build p')).toHaveText(
     /^Built \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC from commit [\da-f]{7}\.$/,
   );
 
-  await expect(page.locator('.about-issues a')).toHaveAttribute(
-    'href',
-    'https://github.com/cheminfo/polycarp.cheminfo.org/issues',
-  );
+  await expect(page.locator('.about-licence')).toHaveCount(0);
+  await expect(page.locator('.about-issues')).toHaveCount(0);
 });
 
 test('the site says how the model and its dataset were built', async ({
